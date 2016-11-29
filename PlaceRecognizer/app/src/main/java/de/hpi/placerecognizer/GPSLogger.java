@@ -2,7 +2,10 @@ package de.hpi.placerecognizer;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
+import android.renderscript.RenderScript;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -14,15 +17,31 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.ConsoleMessage;
 
+import network.CNNdroid;
+
 public class GPSLogger extends AppCompatActivity {
 
     private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 200;
     private static boolean permission_granted = false;
     GPSTracker gps;
+    RenderScript rs = null;
+    CNNdroid conv = null;//new CNNdroid(rs, "/sdcard/Data_Cifar10/Cifar10_def.txt");
 
     private boolean hasPermission(String permission) {
         int permissionStatus = ActivityCompat.checkSelfPermission(this, permission);
         return(permissionStatus == PackageManager.PERMISSION_GRANTED);
+    }
+
+    private void showCoordinates(View view) {
+        gps = new GPSTracker(GPSLogger.this);
+        if (gps.canGetLocation() && permission_granted) {
+            double lng = gps.getLongitude();
+            double lat = gps.getLatitude();
+            Snackbar.make(view, "Lat: " + lat + "\nLong: " + lng, Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+        } else {
+            gps.showSettingsAlert();
+        }
     }
 
     @Override
@@ -36,28 +55,42 @@ public class GPSLogger extends AppCompatActivity {
 
         if (!hasPermission(Manifest.permission.ACCESS_FINE_LOCATION) &&
             !hasPermission(Manifest.permission.ACCESS_COARSE_LOCATION)) {
-            System.out.println("Requesting Permission");
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+        } else if (!hasPermission(Manifest.permission.READ_EXTERNAL_STORAGE) ||
+                  (!hasPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE))) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     MY_PERMISSIONS_REQUEST_READ_CONTACTS);
         } else {
             permission_granted = true;
         }
 
+        rs = RenderScript.create(this);
+        new prepareModel().execute(rs);
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                gps = new GPSTracker(GPSLogger.this);
-                if (gps.canGetLocation() && permission_granted) {
-                    double lng = gps.getLongitude();
-                    double lat = gps.getLatitude();
-                    Snackbar.make(view, "Lat: " + lat + "\nLong: " + lng, Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
-                } else {
-                    gps.showSettingsAlert();
-                }
+                showCoordinates(view);
             }
         });
+    }
+
+    private class prepareModel extends AsyncTask<RenderScript, Void, CNNdroid> {
+        @Override
+        protected CNNdroid doInBackground(RenderScript... params) {
+            try {
+                conv = new CNNdroid(rs, Environment.getExternalStorageDirectory().getPath() + "/Download/Data_Cifar10/Cifar10_def.txt");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return conv;
+        }
     }
 
     @Override
