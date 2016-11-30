@@ -15,9 +15,10 @@ layer {
 layer {
   type: "Pooling"
   name: "pool1"
-  pool: MAX
+  pool: "max"
   kernel_size: 3
   stride: 2
+  pad: 0
 }
 
 layer {
@@ -29,9 +30,9 @@ layer {
   type: "Convolution"
   name: "conv2"
   parameters_file: "Datamodel_param_conv2.msg"
-  pad 2
-  group 1
-  stride 1
+  pad: 2
+  group: 1
+  stride: 1
 }
 
 layer {
@@ -42,18 +43,19 @@ layer {
 layer {
   type: "Pooling"
   name: "pool2"
-  pool AVE
-  kernel_size 3
-  stride 2
+  pool: "ave"
+  kernel_size: 3
+  stride: 2
+  pad: 0
 }
 
 layer {
   type: "Convolution"
   name: "conv3"
   parameters_file: "Datamodel_param_conv3.msg"
-  pad 2
-  group 1
-  stride 1
+  pad: 2
+  group: 1
+  stride: 1
 }
 
 layer {
@@ -64,9 +66,10 @@ layer {
 layer {
   type: "Pooling"
   name: "pool3"
-  pool AVE
-  kernel_size 3
-  stride 2
+  pool: "ave"
+  kernel_size: 3
+  stride: 2
+  pad: 0
 }
 
 layer {
