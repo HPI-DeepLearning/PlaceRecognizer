@@ -2,6 +2,8 @@ package de.hpi.placerecognizer;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -17,7 +19,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.ConsoleMessage;
 
+import messagepack.ParamUnpacker;
 import network.CNNdroid;
+
+import static android.graphics.Color.blue;
+import static android.graphics.Color.green;
+import static android.graphics.Color.red;
 
 public class GPSLogger extends AppCompatActivity {
 
@@ -77,8 +84,29 @@ public class GPSLogger extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 showCoordinates(view);
+                classifyImage(view);
             }
         });
+    }
+
+    private void classifyImage(View view) {
+        Bitmap bmp = BitmapFactory.decodeFile(Environment.getExternalStorageDirectory().getPath() + "/Download/BMW-2-series.jpg");
+        Bitmap bmp1 = Bitmap.createScaledBitmap(bmp, 32, 32, false);
+        ParamUnpacker pu = new ParamUnpacker();
+        float[][][] mean = (float[][][]) pu.unpackerFunction(Environment.getExternalStorageDirectory().getPath()+"/Download/Data_Cifar10/mean.msg", float[][][].class);
+        float[][][][] inputBatch = new float[1][3][32][32];
+
+        for (int j = 0; j < 32; ++j)
+            for (int k = 0; k < 32; ++k) {
+                int color = bmp1.getPixel(j, k);
+                inputBatch[0][0][k][j] = (float) (blue(color)); //- mean[0][j][k];
+                inputBatch[0][1][k][j] = (float) (green(color)); //- mean[1][j][k];
+                inputBatch[0][2][k][j] = (float) (red(color)); //- mean[2][j][k];
+            }
+
+        float[][] output = (float[][]) conv.compute(inputBatch);
+        Snackbar.make(view, String.valueOf(output[0][0]), Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show();
     }
 
     private class prepareModel extends AsyncTask<RenderScript, Void, CNNdroid> {
@@ -89,6 +117,7 @@ public class GPSLogger extends AppCompatActivity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            System.out.println("DONE");
             return conv;
         }
     }
