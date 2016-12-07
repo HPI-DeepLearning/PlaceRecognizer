@@ -33,7 +33,7 @@ import static android.graphics.Color.red;
 
 public class GPSLogger extends AppCompatActivity {
 
-    private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 200;
+    private static final int PERMISSION_REQ_CODE = 200;
     private static boolean permission_granted = false;
     GPSTracker gps;
     RenderScript rs = null;
@@ -83,15 +83,15 @@ public class GPSLogger extends AppCompatActivity {
             !hasPermission(Manifest.permission.ACCESS_COARSE_LOCATION)) {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+                    PERMISSION_REQ_CODE);
         } else if (!hasPermission(Manifest.permission.READ_EXTERNAL_STORAGE) ||
                   (!hasPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE))) {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                    MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+                    PERMISSION_REQ_CODE);
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+                    PERMISSION_REQ_CODE);
         } else {
             permission_granted = true;
         }
@@ -103,7 +103,17 @@ public class GPSLogger extends AppCompatActivity {
                 "/Download/Holopainen_Image02.jpg",
                 "/Download/BMW-2-series.jpg",
                 "/Download/sea-gull-bird-sky-nature.jpg",
-                "/Download/bird.jpg"
+                "/Download/bird.jpg",
+                "/Download/truck.jpg",
+                "/Download/ship.jpg",
+                "/Download/dog.jpg",
+                "/Download/cat.jpg",
+                "/Download/frog.jpg",
+                "/Download/horse.jpg",
+                "/Download/airplane.jpg",
+                "/Download/airplane2.jpg",
+                "/Download/horse2.jpg",
+                "/Download/horse3.jpg"
         };
 
         final ViewFlipper viewFlipper = (ViewFlipper) findViewById(R.id.viewflipper);
@@ -133,9 +143,9 @@ public class GPSLogger extends AppCompatActivity {
         for (int j = 0; j < 32; ++j) {
             for (int k = 0; k < 32; ++k) {
                 int color = bmp1.getPixel(j, k);
-                inputBatch[0][0][k][j] = (float) (blue(color)) - mean[0][j][k];
-                inputBatch[0][1][k][j] = (float) (green(color)) - mean[1][j][k];
-                inputBatch[0][2][k][j] = (float) (red(color)) - mean[2][j][k];
+                inputBatch[0][0][k][j] = (float) (blue(color));// - mean[0][j][k];
+                inputBatch[0][1][k][j] = (float) (green(color));// - mean[1][j][k];
+                inputBatch[0][2][k][j] = (float) (red(color));// - mean[2][j][k];
             }
         }
 
@@ -205,12 +215,11 @@ public class GPSLogger extends AppCompatActivity {
                                            int[] grantResults)
     {
         switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_READ_CONTACTS: {
+            case PERMISSION_REQ_CODE: {
                 if (grantResults.length > 0 &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     permission_granted = true;
                 }
-                return;
             }
         }
     }
