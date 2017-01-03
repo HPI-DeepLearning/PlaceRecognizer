@@ -25,6 +25,7 @@ def generate_pano_url(location=None, heading=None, fov=90, pitch=0, size=(640, 6
         params.pop(k)
 
     url = '%s?%s' % (api_base, urllib.urlencode(params))
+    print(url)
     return url
 
 

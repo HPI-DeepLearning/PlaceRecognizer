@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="utf-8">
+<style>
+    html,
+    body {
+        height: 95%;
+        margin: 0;
+        padding: 0;
+    }
+
+    #map,
+    #pano {
+        float: left;
+        height: 95%;
+        width: 45%;
+    }
+</style>
+</head>
+
+<body>
+<div id="tray">
+    <button id="doer" onclick="doThings()">do it</button>
+    <span id="resulting"></span>
+</div>
+<div id="map"></div>
+<div id="pano"></div>
+<script>
+    var panorama, map;
+    var APIkey= "AIzaSyCeG4-c--bxZT8CFVBDhPHu3aNqjwv9jsg"
+
+    function initialize() {
+        var berlin = new google.maps.LatLng(52.51627, 13.37771);
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: berlin,
+            zoom: 14
+        });
+        google.maps.streetViewViewer = 'photosphere';
+        panorama = new google.maps.StreetViewPanorama(
+            document.getElementById('pano'), {
+                position: berlin,
+                pov: {
+                    heading: 34,
+                    pitch: 10
+                }
+            });
+        map.setStreetView(panorama);
+    }
+
+    function doThings() {
+        console.log("doing things");
+        document.getElementById("resulting").innerHTML = "https://maps.googleapis.com/maps/api/streetview?size=640x640" +"&pano=" + panorama.getPano() + "&heading=" + panorama.getPov().heading + "&pitch=" + panorama.getPov().pitch + "&fov="+ (180/ (Math.pow(2, panorama.getZoom()?panorama.getZoom():1)))+ "&key=" + APIkey;
+      //use the next line to open in a new tab the resulting image at max size (640x640)
+      google.maps.streetViewViewer = 'photosphere';
+
+        window.open("https://maps.googleapis.com/maps/api/streetview?size=640x640" + "&pano=" + panorama.getPano() + "&heading=" + panorama.getPov().heading + "&pitch=" + panorama.getPov().pitch + "&fov="+ (180/ (Math.pow(2, panorama.getZoom())))+ "&key=" +APIkey)
+    }
+</script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCeG4-c--bxZT8CFVBDhPHu3aNqjwv9jsg&callback=initialize">
+</script>
+</body>
+
+</html>

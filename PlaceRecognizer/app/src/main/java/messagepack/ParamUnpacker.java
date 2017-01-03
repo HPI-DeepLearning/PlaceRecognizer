@@ -35,7 +35,7 @@ public class ParamUnpacker {
             convParams = unpacker.read(classType);
             unpacker.close();
         } catch (Exception e) {
-            Log.d("MessagePack_Init:", e.getMessage());
+            Log.d("MessagePack_Init2:", e.getMessage());
             return null;
         }
 

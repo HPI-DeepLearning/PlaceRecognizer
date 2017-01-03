@@ -49,8 +49,9 @@ if __name__ == '__main__':
                 except:
                     continue
 
+                fov = int(row['fov'])
                 offsets = [-30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30]
-                for headingOffset in offsets:
+                for headingOffset in range(0, fov):
                     lat2 = math.radians(float(row['buildingLat']))
                     long2 = math.radians(float(row['buildingLong']))
                     lat1 = math.radians(float(row[args.lat]))
@@ -63,13 +64,13 @@ if __name__ == '__main__':
 
                     bearing = math.degrees(bearing)
                     bearing = (bearing + 360) % 360
-                    bearing = 360 - bearing + headingOffset
+                    bearing = 360 - bearing + (headingOffset - fov/2)
 
                     params.append((floc, bearing))
                     l = len(params)
                     # build URL
                     if l >= args.batch_size:
-                        urls = [generate_pano_url(floc, fov=120, heading=heading, key=args.key) for floc, heading in params]
+                        urls = [generate_pano_url(floc, fov=fov, heading=heading, key=args.key) for floc, heading in params]
                         
                         reqs = (grequests.get(url) for url in urls)
                         # send requests and block

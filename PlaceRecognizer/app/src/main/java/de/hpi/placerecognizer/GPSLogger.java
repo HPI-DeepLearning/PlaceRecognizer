@@ -1,12 +1,14 @@
 package de.hpi.placerecognizer;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.renderscript.RenderScript;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -34,11 +36,15 @@ import static android.graphics.Color.red;
 public class GPSLogger extends AppCompatActivity {
 
     private static final int PERMISSION_REQ_CODE = 200;
+    static final int REQUEST_IMAGE_CAPTURE = 201;
     private static boolean permission_granted = false;
     GPSTracker gps;
     RenderScript rs = null;
     CNNdroid conv = null;
     String[] labels;
+    String rootpath = Environment.getExternalStorageDirectory().getPath()+"/";
+    String imgpath = rootpath + "imgs/";
+    private ImageView mImageView;
 
     private boolean hasPermission(String permission) {
         int permissionStatus = ActivityCompat.checkSelfPermission(this, permission);
@@ -59,7 +65,7 @@ public class GPSLogger extends AppCompatActivity {
 
     private void addImageViewToFlipper(final String pathToImg, final ViewFlipper viewFlipper) {
         ImageView imageView = new ImageView(this);
-        imageView.setImageBitmap(BitmapFactory.decodeFile(Environment.getExternalStorageDirectory().getPath() + pathToImg));
+        imageView.setImageBitmap(BitmapFactory.decodeFile(imgpath + pathToImg));
         viewFlipper.addView(imageView);
         imageView.setOnClickListener(new View.OnClickListener() {
 
@@ -72,10 +78,13 @@ public class GPSLogger extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mImageView = new ImageView(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gpslogger);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        final ViewFlipper viewFlipper = (ViewFlipper) findViewById(R.id.viewflipper);
+        viewFlipper.addView(mImageView);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 
@@ -100,63 +109,93 @@ public class GPSLogger extends AppCompatActivity {
         new prepareModel().execute(rs);
 
         final String[] images = new String[] {
-                "/Download/Holopainen_Image02.jpg",
-                "/Download/BMW-2-series.jpg",
-                "/Download/sea-gull-bird-sky-nature.jpg",
-                "/Download/bird.jpg",
-                "/Download/truck.jpg",
-                "/Download/ship.jpg",
-                "/Download/dog.jpg",
-                "/Download/cat.jpg",
-                "/Download/frog.jpg",
-                "/Download/horse.jpg",
-                "/Download/airplane.jpg",
-                "/Download/airplane2.jpg",
-                "/Download/horse2.jpg",
-                "/Download/horse3.jpg"
+                "/Holopainen_Image02.jpg",
+                "/BMW-2-series.jpg",
+                "/sea-gull-bird-sky-nature.jpg",
+                "/bird.jpg",
+                "/truck.jpg",
+                "/ship.jpg",
+                "/dog.jpg",
+                "/cat.jpg",
+                "/frog.jpg",
+                "/horse.jpg",
+                "/airplane.jpg",
+                "/airplane2.jpg",
+                "/horse2.jpg",
+                "/horse3.jpg"
         };
 
-        final ViewFlipper viewFlipper = (ViewFlipper) findViewById(R.id.viewflipper);
+        //final ViewFlipper viewFlipper = (ViewFlipper) findViewById(R.id.viewflipper);
         for(String img : images) {
-            addImageViewToFlipper(img, viewFlipper);
+            //addImageViewToFlipper(img, viewFlipper);
         }
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                dispatchTakePictureIntent();
+                //viewFlipper.addView(mImageView);
                 //showCoordinates(view);
-                int currentIdx = viewFlipper.getDisplayedChild();
-                Bitmap bmp = BitmapFactory.decodeFile(Environment.getExternalStorageDirectory().getPath() + images[currentIdx]);
-                String imageClass = classifyImage(bmp);
-                TextView textView = (TextView) findViewById(R.id.text);
-                textView.setText(imageClass);
+//                int currentIdx = viewFlipper.getDisplayedChild();
+//                Bitmap bmp = BitmapFactory.decodeFile(imgpath + images[currentIdx]);
+//                String imageClass = classifyImage(bmp);
+//                TextView textView = (TextView) findViewById(R.id.text);
+//                textView.setText(imageClass);
             }
         });
+    }
+
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            mImageView.setImageBitmap(imageBitmap);
+            String imageClass = classifyImage(imageBitmap);
+            TextView textView = (TextView) findViewById(R.id.text);
+            textView.setText(imageClass);
+        }
     }
 
     private String classifyImage(Bitmap bmp) {
         Bitmap bmp1 = Bitmap.createScaledBitmap(bmp, 32, 32, false);
         ParamUnpacker pu = new ParamUnpacker();
-        float[][][] mean = (float[][][]) pu.unpackerFunction(Environment.getExternalStorageDirectory().getPath()+"/Download/Data_Cifar10/mean.msg", float[][][].class);
+        float[][][] mean = (float[][][]) pu.unpackerFunction(rootpath + "Data_Cifar10/mean.msg", float[][][].class);
         float[][][][] inputBatch = new float[1][3][32][32];
 
         for (int j = 0; j < 32; ++j) {
             for (int k = 0; k < 32; ++k) {
                 int color = bmp1.getPixel(j, k);
-                inputBatch[0][0][k][j] = (float) (blue(color));// - mean[0][j][k];
-                inputBatch[0][1][k][j] = (float) (green(color));// - mean[1][j][k];
-                inputBatch[0][2][k][j] = (float) (red(color));// - mean[2][j][k];
+                inputBatch[0][0][k][j] = (float) (red(color)) - mean[0][k][j];
+                inputBatch[0][1][k][j] = (float) (green(color)) - mean[1][k][j];
+                inputBatch[0][2][k][j] = (float) (blue(color)) - mean[2][k][j];
             }
         }
 
         float[][] output = (float[][]) conv.compute(inputBatch);
         String res = accuracy(output[0], labels, 3);
+        float sum = 0;
+        for(int i = 0; i < output.length; i++) {
+            for(int j = 0; j < output[i].length; j++) {
+                System.out.print(output[i][j] + ", ");
+                sum += output[i][j];
+            }
+            System.out.println();
+        }
+        //System.out.println("Sum: " + sum);
         return res;
     }
 
     private void readLabels() {
         labels = new String[1000];
-        File f = new File(Environment.getExternalStorageDirectory().getPath() + "/Download/Data_Cifar10/labels.txt");
+        File f = new File(rootpath + "Data_Cifar10/labels.txt");
         Scanner s;
         int iter = 0;
 
@@ -175,7 +214,7 @@ public class GPSLogger extends AppCompatActivity {
         @Override
         protected CNNdroid doInBackground(RenderScript... params) {
             try {
-                conv = new CNNdroid(rs, Environment.getExternalStorageDirectory().getPath() + "/Download/Data_Cifar10/Cifar10_def.txt");
+                conv = new CNNdroid(rs, rootpath + "Data_Cifar10/Cifar10_def.txt");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -205,7 +244,7 @@ public class GPSLogger extends AppCompatActivity {
         }
 
         for (int i = 0 ; i < topk ; i++)
-            result += labels[max_num[i]]  + " , P = " + max[i] * 100 + " %\n\n";
+            result += labels[max_num[i]]  + ", P = " + max[i] * 100 + " %\n\n";
         return result;
     }
 

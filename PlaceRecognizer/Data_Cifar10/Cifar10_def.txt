@@ -1,4 +1,4 @@
-root_directory: "/sdcard/Download/Data_Cifar10/"
+root_directory: "/sdcard/Data_Cifar10/"
 allocated_ram: 100
 auto_tuning: "off"
 execution_mode: "parallel"
@@ -6,7 +6,7 @@ execution_mode: "parallel"
 layer {
   type: "Convolution"
   name: "conv1"
-  parameters_file: "Datamodel_param_conv1.msg"
+  parameters_file: "model_param_conv1.msg"
   pad: 2
   group: 1
   stride: 1
@@ -29,7 +29,7 @@ layer {
 layer {
   type: "Convolution"
   name: "conv2"
-  parameters_file: "Datamodel_param_conv2.msg"
+  parameters_file: "model_param_conv2.msg"
   pad: 2
   group: 1
   stride: 1
@@ -52,7 +52,7 @@ layer {
 layer {
   type: "Convolution"
   name: "conv3"
-  parameters_file: "Datamodel_param_conv3.msg"
+  parameters_file: "model_param_conv3.msg"
   pad: 2
   group: 1
   stride: 1
@@ -75,13 +75,13 @@ layer {
 layer {
   type: "FullyConnected"
   name: "ip1"
-  parameters_file: "Datamodel_param_ip1.msg"
+  parameters_file: "model_param_ip1.msg"
 }
 
 layer {
   type: "FullyConnected"
   name: "ip2"
-  parameters_file: "Datamodel_param_ip2.msg"
+  parameters_file: "model_param_ip2.msg"
 }
 
 layer {
