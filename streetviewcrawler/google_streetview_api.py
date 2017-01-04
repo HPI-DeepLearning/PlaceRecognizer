@@ -1,12 +1,13 @@
 import requests
 import urllib
 
-api_base = 'http://maps.googleapis.com/maps/api/streetview'
+api_base = 'https://maps.googleapis.com/maps/api/streetview'
+metadata_base = 'https://maps.googleapis.com/maps/api/streetview/metadata'
 #no_image = open('no-image.jpg').read()
 # md5 generated from MongoDB by saving no_image.jpg
 no_image_md5 = 'e8bedec32bf7863c1899fa1e6eee1f44'
 
-def generate_pano_url(location=None, heading=None, fov=90, pitch=0, size=(640, 640), pano_id=None, key=None):
+def create_url_body(location=None, heading=None, fov=90, pitch=0, size=(640, 640), pano_id=None, key=None):
     params = {
         # assume (long, lat) pair
         'location': location if isinstance(location, str) else '%f,%f' % (location[1], location[0]), 
@@ -23,8 +24,18 @@ def generate_pano_url(location=None, heading=None, fov=90, pitch=0, size=(640, 6
     # remove None parameters
     for k in filter(lambda k: params[k]==None, params.iterkeys()):
         params.pop(k)
+    return urllib.urlencode(params)
 
-    url = '%s?%s' % (api_base, urllib.urlencode(params))
+def generate_meta_url(location=None, heading=None, fov=90, pitch=0, size=(640, 640), pano_id=None, key=None):
+    urlbody = create_url_body(location, heading, fov, pitch, size, pano_id, key)
+
+    url = '%s?%s' % (metadata_base, urlbody)
+    return url
+
+def generate_pano_url(location=None, heading=None, fov=90, pitch=0, size=(640, 640), pano_id=None, key=None):
+    urlbody = create_url_body(location, heading, fov, pitch, size, pano_id, key)
+
+    url = '%s?%s' % (api_base, urlbody)
     print(url)
     return url
 
