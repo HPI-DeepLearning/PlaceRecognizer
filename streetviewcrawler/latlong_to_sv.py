@@ -97,9 +97,24 @@ if __name__ == '__main__':
 
                         for j, (param, rep) in enumerate(zip(params, reps)):
                             if rep.status_code == 200:
-                                f = open(row['name'] + "_" + str(locId) + "-" + str(imgId) + ".png", 'w')
+                                fname = row['name'] + "_" + str(locId) + "-" + str(imgId)
+                                f = open(fname + ".png", 'w')
                                 f.write(rep.content)
                                 f.close()
+
+                                from PIL import Image
+                                from resizeimage import resizeimage
+
+                                with open(fname + '.png', 'r+b') as f:
+                                    with Image.open(f) as image:
+                                        cover = resizeimage.resize_cover(image, [image.width * 0.9, image.height * 0.9])
+                                        cover.save(fname + '_medium.png', image.format)
+
+                                with open(fname + '.png', 'r+b') as f:
+                                    with Image.open(f) as image:
+                                        cover = resizeimage.resize_cover(image, [image.width * 0.8, image.height * 0.8])
+                                        cover.save(fname + '_small.png', image.format)
+
                                 imgId = imgId + 1
                             else:
                                 print 'error getting %r from %s' % (param, rep.url)
