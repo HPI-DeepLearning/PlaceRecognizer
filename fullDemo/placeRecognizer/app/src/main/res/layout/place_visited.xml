@@ -1,0 +1,43 @@
+<android.support.v7.widget.CardView
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+    >
+
+        <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/place_photo"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginRight="16dp"
+                android:src="@mipmap/ic_launcher"/>
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/place_title"
+                android:text="Branderburg gate"
+                android:layout_toRightOf="@+id/place_photo"
+                android:layout_alignParentTop="true"
+                android:textSize="30sp"
+        />
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/place_description"
+                android:text="Branderburg tor est une ijef oiehf oeihfe "
+                android:layout_toRightOf="@+id/place_photo"
+                android:layout_below="@+id/place_title"
+        />
+
+    </RelativeLayout>
+
+</android.support.v7.widget.CardView>
