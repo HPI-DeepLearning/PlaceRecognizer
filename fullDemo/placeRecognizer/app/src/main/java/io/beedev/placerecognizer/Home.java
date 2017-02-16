@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -30,6 +31,7 @@ import network.CNNdroid;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Scanner;
 
 import static android.graphics.Color.blue;
@@ -47,8 +49,9 @@ public class Home extends AppCompatActivity
     RenderScript rs = null;
     CNNdroid conv = null;
     String[] labels;
-    String rootpath = Environment.getExternalStorageDirectory().getPath()+"/";
-    String imgpath = rootpath + "imgs/";
+    final String rootpath = Environment.getExternalStorageDirectory().getPath()+"/";
+    final String imgpath = rootpath + "imgs/";
+    final Uri photoURI = Uri.parse(rootpath + "photo.jpg");
     private ImageView mImageView;
 
     private boolean hasPermission(String permission) {
@@ -147,7 +150,6 @@ public class Home extends AppCompatActivity
         });
     }
 
-
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
@@ -158,12 +160,17 @@ public class Home extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            mImageView.setImageBitmap(imageBitmap);
-            String imageClass = classifyImage(imageBitmap);
-            TextView textView = (TextView) findViewById(R.id.text);
-            textView.setText(imageClass);
+            //Bundle extras = data.getExtras();
+            Bitmap imageBitmap = null;//(Bitmap) extras.get("data");
+            try {
+                imageBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), photoURI);
+                mImageView.setImageBitmap(imageBitmap);
+                String imageClass = classifyImage(imageBitmap);
+                TextView textView = (TextView) findViewById(R.id.text);
+                textView.setText(imageClass);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -265,8 +272,6 @@ public class Home extends AppCompatActivity
             }
         }
     }
-
-
 
     @Override
     public void onBackPressed() {

@@ -33,7 +33,6 @@ import java.util.List;
 public class NearPlaces extends AppCompatActivity {
 
     private RecyclerView recyclerView;
-    private NearPlacesAdapter adapter;
     private List<LocationDetails> listLocation;
 
     @Override
@@ -51,9 +50,6 @@ public class NearPlaces extends AppCompatActivity {
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.addItemDecoration(new GridSpacingItemDecoration(2, dpToPx(10), true));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setAdapter(adapter);
-
-
     }
 
     /**

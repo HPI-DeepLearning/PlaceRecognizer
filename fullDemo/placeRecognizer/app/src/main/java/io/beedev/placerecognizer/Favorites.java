@@ -16,7 +16,5 @@ public class Favorites extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         /*setContentView(R.layout.favorites_places);*/
-
-
     }
 }
