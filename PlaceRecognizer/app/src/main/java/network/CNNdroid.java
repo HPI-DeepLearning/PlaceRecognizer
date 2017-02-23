@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import layers.Accuracy;
+import layers.BatchNorm;
 import layers.Convolution;
 import layers.FullyConnected;
 import layers.LayerInterface;
@@ -467,6 +468,25 @@ public class CNNdroid {
             NonLinear nl = new NonLinear(name, NonLinear.NonLinearType.RectifiedLinearUnit);
             lastLayer = nl;
             layers.add(nl);
+            return true;
+        }
+        else if (type.equalsIgnoreCase("BatchNorm")) {
+            String parametersFile = null;
+            for (int i = 0; i < args.size(); ++i) {
+                String tempArg = args.get(i);
+                String tempValue = values.get(i);
+                if (tempArg.equalsIgnoreCase("parameters_file"))
+                    parametersFile = tempValue;
+                else
+                    return false;
+            }
+            if (parametersFile == null)
+                return false;
+
+            BatchNorm bn = new BatchNorm(name, rootDir + parametersFile, parallel);
+            ++layerCounter;
+            lastLayer = bn;
+            layers.add(bn);
             return true;
         }
         else

@@ -22,6 +22,12 @@ layer {
 }
 
 layer {
+  type: "BatchNorm"
+  name: "norm1"
+  parameters_file: "model_param_norm1.msg"
+}
+
+layer {
   type: "ReLU"
   name: "relu1"
 }
@@ -36,17 +42,24 @@ layer {
 }
 
 layer {
-  type: "ReLU"
-  name: "relu2"
-}
-
-layer {
   type: "Pooling"
   name: "pool2"
   pool: "max"
   kernel_size: 3
   stride: 2
   pad: 0
+}
+
+layer {
+  type: "BatchNorm"
+  name: "norm2"
+  parameters_file: "model_param_norm2.msg"
+}
+
+
+layer {
+  type: "ReLU"
+  name: "relu2"
 }
 
 layer {
@@ -59,17 +72,23 @@ layer {
 }
 
 layer {
-  type: "ReLU"
-  name: "relu3"
-}
-
-layer {
   type: "Pooling"
   name: "pool3"
   pool: "max"
   kernel_size: 3
   stride: 2
   pad: 0
+}
+
+layer {
+  type: "BatchNorm"
+  name: "norm3"
+  parameters_file: "model_param_norm3.msg"
+}
+
+layer {
+  type: "ReLU"
+  name: "relu3"
 }
 
 layer {
