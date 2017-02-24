@@ -25,22 +25,28 @@ class ImageClassifier {
     private String[] labels;
     final private String rootpath = Environment.getExternalStorageDirectory().getPath()+"/Download/";
 
+    private static final float GREYSCALE_RED = 0.299f;
+    private static final float GREYSCALE_GREEN = 0.587f;
+    private static final float GREYSCALE_BLUE = 0.114f;
+
     Classification classifyImage(Bitmap bmp) {
-        int imageWidth = 200;
-        int imageHeight = 200;
+        int imageWidth = 80;
+        int imageHeight = 80;
 
         Bitmap bmp1 = Bitmap.createScaledBitmap(bmp, imageHeight, imageWidth, false);
         ParamUnpacker pu = new ParamUnpacker();
 
         //float[][][] mean = (float[][][]) pu.unpackerFunction(rootpath + "Data_Cifar10/mean.msg", float[][][].class);
-        float[][][][] inputBatch = new float[1][3][imageHeight][imageWidth];
+        //float[][][][] inputBatch = new float[1][3][imageHeight][imageWidth];
+        float[][][][] inputBatch = new float[1][1][imageHeight][imageWidth];
 
         for (int j = 0; j < imageHeight; ++j) {
             for (int k = 0; k < imageWidth; ++k) {
-                int color = bmp1.getPixel(j, k);
-                inputBatch[0][0][k][j] = (float) (red(color));// - mean[0][k][j];
-                inputBatch[0][1][k][j] = (float) (green(color));// - mean[1][k][j];
-                inputBatch[0][2][k][j] = (float) (blue(color));// - mean[2][k][j];
+                int color = bmp1.getPixel(k, j);
+                inputBatch[0][0][j][k] = GREYSCALE_RED * red(color) + GREYSCALE_GREEN * green(color) + GREYSCALE_BLUE * blue(color);
+//                inputBatch[0][0][j][k] = (float) (red(color));// - mean[0][k][j];
+//                inputBatch[0][1][j][k] = (float) (green(color));// - mean[1][k][j];
+//                inputBatch[0][2][j][k] = (float) (blue(color));// - mean[2][k][j];
             }
         }
 
@@ -54,7 +60,7 @@ class ImageClassifier {
             }
             System.out.println();
         }
-        //System.out.println("Sum: " + sum);
+        System.out.println("Sum: " + sum);
         return getBestMatch(output[0]);
     }
 
