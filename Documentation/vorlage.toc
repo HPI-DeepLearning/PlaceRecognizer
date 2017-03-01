@@ -1,0 +1,4 @@
+\select@language {ngerman}
+\contentsline {section}{\numberline {1}Headline}{3}{section.1}
+\contentsline {subsection}{\numberline {1.1}Section Headline}{3}{subsection.1.1}
+\contentsline {section}{\nonumberline Literatur}{5}{section*.3}
