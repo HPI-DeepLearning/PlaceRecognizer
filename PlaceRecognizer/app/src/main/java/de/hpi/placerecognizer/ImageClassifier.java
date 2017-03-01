@@ -52,15 +52,15 @@ class ImageClassifier {
 
         float[][] output = (float[][]) conv.compute(inputBatch);
         //String res = accuracy(output[0], labels, 3);
-        float sum = 0;
+        float sum = 0.0f;
         for(int i = 0; i < output.length; i++) {
             for(int j = 0; j < output[i].length; j++) {
-                System.out.print(output[i][j] + ", ");
+                System.out.print(String.valueOf(output[i][j]) + ", ");
                 sum += output[i][j];
             }
             System.out.println();
         }
-        System.out.println("Sum: " + sum);
+        System.out.println("Sum: " + String.valueOf(sum));
         return getBestMatch(output[0]);
     }
 
