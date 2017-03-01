@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -15,6 +16,8 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.SparseIntArray;
+import android.view.Surface;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int PERMISSION_REQ_CODE = 200;
     static final int REQUEST_IMAGE_CAPTURE = 201;
+    static final int REQUEST_CAMERA_PERMISSION = 201;
     private static boolean permission_granted = false;
     RenderScript rs = null;
 
@@ -43,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private GPSTracker gps;
     private ImageClassifier ic = new ImageClassifier();
     private TextToSpeech textToSpeech;
-
+    private CameraFrameCapture capture;
 
     private boolean hasPermission(String permission) {
         int permissionStatus = ActivityCompat.checkSelfPermission(this, permission);
@@ -122,7 +126,10 @@ public class MainActivity extends AppCompatActivity {
         camera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dispatchTakePictureIntent();
+                //dispatchTakePictureIntent();
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.container, CameraFrameCapture.newInstance())
+                        .commit();
             }
         });
 
@@ -156,6 +163,7 @@ public class MainActivity extends AppCompatActivity {
 //            textView.setText(imageClass);
             try {
                 textView.setText(new GetWiki().execute(imageClass).get().descritpion);
+                //textView.setTextSize(24);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (ExecutionException e) {

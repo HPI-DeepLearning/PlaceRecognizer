@@ -30,7 +30,7 @@ public class GetWiki extends AsyncTask<String, Object, LocationDetails> {
         // Making a request to url and getting response
         String jsonStr = handler.makeServiceCall(url);
 
-        if (!jsonStr.isEmpty()) {
+        if (jsonStr != null) {
             try {
                 JSONObject jsonObj = new JSONObject(jsonStr);
                 JSONObject pages = jsonObj.getJSONObject("query").getJSONObject("pages");

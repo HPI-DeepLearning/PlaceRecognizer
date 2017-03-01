@@ -26,8 +26,8 @@ class ImageClassifier {
     final private String rootpath = Environment.getExternalStorageDirectory().getPath()+"/Download/";
 
     Classification classifyImage(Bitmap bmp) {
-        int imageWidth = 200;
-        int imageHeight = 200;
+        int imageWidth = 80;
+        int imageHeight = 80;
 
         Bitmap bmp1 = Bitmap.createScaledBitmap(bmp, imageHeight, imageWidth, false);
         ParamUnpacker pu = new ParamUnpacker();

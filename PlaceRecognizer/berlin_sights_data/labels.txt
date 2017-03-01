@@ -1,4 +1,4 @@
-berlin_cathedral
-brandenburg_gate
-reichstag
-tv_tower
+Berlin_Cathedral
+Brandenburg_Gate
+reichstag_building
+Fernsehturm_Berlin
