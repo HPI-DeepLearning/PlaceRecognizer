@@ -239,6 +239,8 @@ INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/cm/cmmib10.tfm
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/cm/cmbsy10.tfm
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/vf/public/ae/aer12.vf
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/cm/cmu10.tfm
+INPUT /usr/local/texlive/2016/texmf-dist/tex/latex/ae/omsaer.fd
+INPUT /usr/local/texlive/2016/texmf-dist/tex/latex/ae/omsaer.fd
 INPUT /Users/timoesterreich/PlaceRecognizer/Documentation/beispiel.png
 INPUT /Users/timoesterreich/PlaceRecognizer/Documentation/beispiel.png
 INPUT /Users/timoesterreich/PlaceRecognizer/Documentation/beispiel.png
@@ -257,4 +259,5 @@ INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pf
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsl12.pfb
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmssbx10.pfb
+INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb

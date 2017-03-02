@@ -1,14 +1,14 @@
 % Koma-Script Basisklasse
 \documentclass[a4paper,12pt,pagesize,headsepline,bibtotoc,titlepage]{scrartcl}
 
-\usepackage[ngerman]{babel}		% deutsche Trennmuster
-\usepackage[utf8]{inputenc}		% direkte Eingabe von Umlauten & Co. (Vorsicht: Encoding im Editor muss auch UTF-8 sein!)
+\usepackage[ngerman]{babel}     % deutsche Trennmuster
+\usepackage[utf8]{inputenc}     % direkte Eingabe von Umlauten & Co. (Vorsicht: Encoding im Editor muss auch UTF-8 sein!)
 
-\usepackage[T1]{fontenc}			% T1-Schriften
+\usepackage[T1]{fontenc}            % T1-Schriften
 
-\usepackage{mathptmx}			% Times/Mathe \rmdefault
-\usepackage[scaled=.90]{helvet}	% Skalierte Helvetica \sfdefault
-\usepackage{courier}			% Courier \ttdefault
+\usepackage{mathptmx}           % Times/Mathe \rmdefault
+\usepackage[scaled=.90]{helvet} % Skalierte Helvetica \sfdefault
+\usepackage{courier}            % Courier \ttdefault
 
 % Zusatzpakete für mehr mathematische Symbole, Einfügen von Grafiken
 % und bessere Bildunterschriften
@@ -30,20 +30,20 @@
 \renewcommand{\captionlabelfont}{\bf}
 
 \title{
-	\includegraphics*[width=0.4\textwidth]{hpi_logo.png}\\
-	\vspace{24pt}
-	Recognizing Famous Places on Android
+    \includegraphics*[width=0.4\textwidth]{hpi_logo.png}\\
+    \vspace{24pt}
+    Recognizing Famous Places on Android
 }
 \subtitle{
-	Seminar\\
-	Practical Applications of Multimedia Retrieval\\
-	Winter Semester 2016/2017
+    Seminar\\
+    Practical Applications of Multimedia Retrieval\\
+    Winter Semester 2016/2017
 }
 \author{
-	Tim Oesterreich, Romain Granger\\[12pt]
-	Supervisors:\\
-	Haojin Yang, Christian Bartz\\
-	Prof. Dr. Christoph Meinel
+    Tim Oesterreich, Romain Granger\\[12pt]
+    Supervisors:\\
+    Haojin Yang, Christian Bartz\\
+    Prof. Dr. Christoph Meinel
 }
 \date{\today}
 
@@ -53,8 +53,63 @@
 \newpage
 
 
-\section{Headline}
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed nunc leo. Nam ac leo venenatis est commodo vehicula. Nulla justo nisl, venenatis id tincidunt id, porta ut felis. Cras eu justo ac nisi ornare commodo placerat at risus. Suspendisse ut urna tellus. Cras ut erat tempus justo aliquam laoreet. Praesent est neque, interdum quis convallis et, gravida sed arcu. Mauris bibendum, dui at ullamcorper luctus, arcu dolor laoreet nisi, ut facilisis dui enim a nisl. Sed odio risus, pulvinar suscipit feugiat pharetra, varius non est. Morbi pellentesque libero eu odio pulvinar semper. Praesent cursus adipiscing metus nec fermentum. Nullam malesuada euismod mi nec tincidunt. Nulla eget auctor velit. Mauris quam odio, blandit sit amet pharetra non, lobortis sed risus. Aliquam nec orci vel dolor suscipit tristique. Etiam quam eros, commodo at iaculis at, molestie eu metus. Maecenas viverra dui non magna suscipit sodales commodo justo iaculis (siehe Abbildung \ref{abb:test}).
+\section{CNNDroid}
+What is CNNDroid
+
+\subsection{Setup and Integration into Android Project}
+\begin{itemize}
+    \item{Clone From Github}
+    \item{Copy Files into Android Project}
+    \item{Necessary Import: import network.CNNdroid}
+    \item{Create CNNDroid Object}
+    \item{Call CNNDroid::classify}
+\end{itemize}
+
+\subsection{Structure Overview of necessary CNNDroid Files}
+\begin{itemize}
+    \item{Layer Blob Files}
+    \item{Definition File}
+    \item{Labels}
+\end{itemize}
+
+\subsection{Convert Trained Models into CNNDroid-compatible Format}
+Short Introduction to MessagePack
+\begin{itemize}
+    \item{how to use convertion script}
+    \item{compatible frameworks}
+    \item{compatible layers}
+\end{itemize}
+
+\subsection{CPU vs GPU performance}
+Comparison of computation time of CPU (sequential) and GPU (parallel) mode on in-memory images using CIFAR10 (in-memory to minimize error using camera, CIFAR10 could be exchanged with CaffeNet if too fast)
+
+\newpage
+\section{Google Streetview Crawler}
+% Don't know yet if I need subsections for these
+\subsection{Setup of viewing parameters}
+Explain csv file
+
+\subsection{State of Automation (i.e. taking one image per viewing angle)}
+
+\subsection{Current Limitations}
+Full automation not possible as of current street view API state; wrong latitude/longitude; Streetview Image API returns different images than JavaScript API (which is being used on google maps website)
+
+\newpage
+\section {PlaceRecognizer Application}
+Overview: What does it do. Whom is it for. How does it achieve its task?
+
+\subsection {CNNDroid Integration/Image Classifier}
+Explain ImageClassifier Class; Including Variables that need adaption when changing Layers or DataSets
+
+\subsection {Real-Time Frame Capture}
+How does the camera talk to the Image Classifier?
+
+\subsection {GPS Logger}
+How do we get GPS values and how can we integrate them?
+
+\subsection {Wikipedia Parser}
+How do we get the text for a classified image from Wikipedia?
+
 
 \begin{figure}[hbp]
 \begin{center}
@@ -63,13 +118,6 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed nunc leo. Nam
 \label{abb:test}
 \end{center}
 \end{figure}
-
-\subsection{Section Headline}
-Quisque pharetra, tellus id cursus consectetur, libero arcu sollicitudin nisl, in pulvinar tortor tortor consequat arcu. Donec pulvinar nibh in elit iaculis vel pellentesque diam tincidunt. Fusce posuere volutpat libero in consequat. Curabitur sit amet interdum leo. Vestibulum massa ante, ultrices vel dictum vitae, vestibulum consequat magna. Pellentesque turpis ligula, fermentum vel consectetur id, ornare non diam. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum pretium scelerisque nisi sit amet semper. Nulla lobortis quam sit amet turpis tristique accumsan. Vivamus sed nunc odio.
-
-In tempor leo ut lectus lacinia commodo. Vestibulum pretium accumsan erat, non interdum sem feugiat a. Praesent tempor odio quis arcu laoreet dignissim. Mauris egestas lectus sed purus malesuada feugiat. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec placerat auctor laoreet. Nunc hendrerit viverra posuere. Morbi egestas ante et augue mattis eleifend. Aliquam nibh turpis, adipiscing ac lacinia sed, laoreet vel orci. Donec velit est, fringilla ac vulputate vitae, commodo a velit. Fusce vitae posuere diam. Pellentesque tellus tellus, volutpat non fringilla in, vulputate vitae magna. Proin ligula diam, aliquet eget feugiat ac, rutrum in tortor.
-
-
 
 \newpage
 \begin{thebibliography}{1}

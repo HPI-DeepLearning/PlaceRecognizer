@@ -1,4 +1,16 @@
 \select@language {ngerman}
-\contentsline {section}{\numberline {1}Headline}{3}{section.1}
-\contentsline {subsection}{\numberline {1.1}Section Headline}{3}{subsection.1.1}
-\contentsline {section}{\nonumberline Literatur}{5}{section*.3}
+\contentsline {section}{\numberline {1}CNNDroid}{3}{section.1}
+\contentsline {subsection}{\numberline {1.1}Setup and Integration into Android Project}{3}{subsection.1.1}
+\contentsline {subsection}{\numberline {1.2}Structure Overview of necessary CNNDroid Files}{3}{subsection.1.2}
+\contentsline {subsection}{\numberline {1.3}Convert Trained Models into CNNDroid-compatible Format}{3}{subsection.1.3}
+\contentsline {subsection}{\numberline {1.4}CPU vs GPU performance}{3}{subsection.1.4}
+\contentsline {section}{\numberline {2}Google Streetview Crawler}{4}{section.2}
+\contentsline {subsection}{\numberline {2.1}Setup of viewing parameters}{4}{subsection.2.1}
+\contentsline {subsection}{\numberline {2.2}State of Automation (i.e. taking one image per viewing angle)}{4}{subsection.2.2}
+\contentsline {subsection}{\numberline {2.3}Current Limitations}{4}{subsection.2.3}
+\contentsline {section}{\numberline {3}PlaceRecognizer Application}{5}{section.3}
+\contentsline {subsection}{\numberline {3.1}CNNDroid Integration/Image Classifier}{5}{subsection.3.1}
+\contentsline {subsection}{\numberline {3.2}Real-Time Frame Capture}{5}{subsection.3.2}
+\contentsline {subsection}{\numberline {3.3}GPS Logger}{5}{subsection.3.3}
+\contentsline {subsection}{\numberline {3.4}Wikipedia Parser}{5}{subsection.3.4}
+\contentsline {section}{\nonumberline Literatur}{6}{section*.3}
