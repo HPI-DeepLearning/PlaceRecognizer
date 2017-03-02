@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int PERMISSION_REQ_CODE = 200;
     static final int REQUEST_IMAGE_CAPTURE = 201;
-    static final int REQUEST_CAMERA_PERMISSION = 201;
+    static final int REQUEST_CAMERA_PERMISSION = 202;
     private static boolean permission_granted = false;
     RenderScript rs = null;
 
@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageView mImageView;
 
     private GPSTracker gps;
-    private ImageClassifier ic = new ImageClassifier();
+    static public ImageClassifier ic = new ImageClassifier();
     private TextToSpeech textToSpeech;
     private CameraFrameCapture capture;
 
@@ -159,16 +159,17 @@ public class MainActivity extends AppCompatActivity {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
             mImageView.setImageBitmap(imageBitmap);
-            String imageClass = ic.classifyImage(imageBitmap).get_label();
+            String imageClass = ic.classifyImage(capture.getCurrentFrame()).get_label();
+            System.out.println(imageClass);
 //            textView.setText(imageClass);
-            try {
-                textView.setText(new GetWiki().execute(imageClass).get().descritpion);
-                //textView.setTextSize(24);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
+//            try {
+////                textView.setText(new GetWiki().execute(imageClass).get().descritpion);
+//                //textView.setTextSize(24);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            } catch (ExecutionException e) {
+//                e.printStackTrace();
+//            }
         }
     }
 
