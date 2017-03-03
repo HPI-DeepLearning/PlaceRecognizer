@@ -5,6 +5,7 @@ import android.util.Log;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
@@ -68,6 +69,16 @@ public class CNNdroid {
         for (int i = 0 ; i < layers.size() ; i++) {
             Object temp = output;
             output = layers.get(i).compute(output);
+            if(output.getClass().toString().equals("class [[[[F")) {
+                double[] flatArray = Arrays.stream((double[][][][])output)
+                        .flatMapToDouble(Arrays::stream)
+                        .toArray();
+                for (float value : (float[]) output) {
+                    if (Float.isNaN(value)) {
+                        System.out.println(":(");
+                    }
+                }
+            }
         }
 
         return output;
