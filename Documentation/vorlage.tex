@@ -17,6 +17,7 @@
 % Wenn man direkt mit dem pdflatex eine PDF-Datei erzeugt, sollten diese beiden Pakete eingebunden werden
 \usepackage{hyperref} % Hyperlinks anklickbar
 \usepackage{ae,aecompl} % bessere Bildschirmschriftarten usw.
+\usepackage{cite}
 
 \pagestyle{headings}
 
@@ -53,8 +54,12 @@
 \newpage
 
 \section{Introduction}
+As deep learning is becoming an increasingly big influence in everyday applications, more and more focus is put into increasing its distribution to different platforms. During the winter semester 2016/2017 a project seminar emerged, that laid focus on developing a mobile phone application for Google's Android operating system that is capable of recognizing famous sights in big cities.\\
+Modern smartphones can in some cases outperform mid-range notebooks from a couple of years ago and, most interestingly, often have a dedicated GPU\footnote{Graphics Processing Unit}. GPUs are usually used for deep learning because of their high parallelization capabilities.\\
+Part of this seminar was the evaluation of a fairly recent deep learning framework called CNNDroid, which uses GPU acceleration for classification and promises substantial performance improvements compared to CPU classification.
+
 \section{CNNDroid}
-What is CNNDroid
+CNNDroid is
 
 \subsection{Setup and Integration into Android Project}
 \begin{itemize}
@@ -97,7 +102,7 @@ Full automation not possible as of current street view API state; wrong latitude
 \subsection{Possible Improvements}
 Use Classifier to identify things in photsphere
 
-\subsections{Google Places API/shutterstock/Flickr}
+\subsection{Google Places API/shutterstock/Flickr}
 
 \newpage
 \section {PlaceRecognizer Application}
@@ -124,19 +129,13 @@ How do we get the text for a classified image from Wikipedia?
 \begin{figure}[hbp]
 \begin{center}
 \includegraphics*[width=0.75\textwidth]{beispiel.png}\\
-\caption{Eine Abbildung, Quelle: \cite{willems2008}}
+\caption{Eine Abbildung, Quelle: \cite{cnndroid2016}}
 \label{abb:test}
 \end{center}
 \end{figure}
 
 \newpage
-\begin{thebibliography}{1}
+\bibliography{bibliography}{}
+\bibliographystyle{plain}
 
-\bibitem{willems2008}
-C.~Willems and C.~Meinel.
-``Tele-Lab IT-Security: an Architecture for an online virtual IT Security Lab'',
-\emph{International Journal of Online Engineering (iJOE)},
-X, 2008.
-
-\end{thebibliography}
 \end{document}
