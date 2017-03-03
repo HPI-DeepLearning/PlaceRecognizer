@@ -1,0 +1,59 @@
+\section{CNNDroid}
+CNNDroid is an open source deep learning library for Android. It is able to execute convolutional neural networks, supporting most CNN layers used by existing desktop/server deep learning frameworks, namely Caffe, Theano and Torch. Supported layers, as of March 2017 are:
+\begin{itemize}
+    \item{Convolutional Layer}
+    \item{Pooling Layer}
+    \item{Local Response Normalization Layer}
+    \item{Fully-Connected Layer}
+    \item{Rectified Linear Layer}
+    \item{Softmax Layer}
+    \item{Accuracy and Top-K Layer}
+\end{itemize}
+Due to the library being open source, it is possible to add additional layers, such as batch normalization or sigmoid.\\
+The library also supports a variety of customizations, like maximum memory usage, GPU or CPU acceleration and automatic performance tuning.
+
+\subsection{Setup and Integration into Android Project}
+CNNDroid is a source code library. That means that integration into an existing Android Project is fairly straight forward and doesn't require any third-party dependencies.\\
+The only prerequisites are:
+\begin{itemize}
+    \item{A functional Android development environment (e.g. Android Studio\footnote{\url{https://developer.android.com/studio/index.html}})}
+    \item{Android phone or emulator running at least Android SDK version 21.0 (Lollipop)}
+\end{itemize}
+
+To integrate CNNDroid into the project, the project has to be cloned from its GitHub\footnote{https://github.com/ENCP/CNNdroid} page. Inside the `\texttt{CNNdroid Source Package}' folder, there are three folders. `\texttt{java}', `\texttt{rs}' and `\texttt{libs}'.\\
+The `\texttt{java}' and `\texttt{rs}' folders need to be copied into the your `\texttt{app/src/main/}' directory, merging the `\texttt{java}' folders.\\
+The `\texttt{libs}' folder has to be copied and merged into your `\texttt{app/}' directory.\\
+For effective usage of CNNDroid, it needs read and write access to storage on the smartphone. Android policies require an application to request these permissions before the app starts. These permission requests are specified inside the `\texttt{AndroidManifest.xml}' file. Inside this file, the following lines have to be added before the `\lstinline[language=XML]{<application}' section:
+
+\begin{lstlisting}[language=XML, basicstyle=\scriptsize]
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+\end{lstlisting}
+
+To cope with the high computational requirements, CNNDroid potentially needs a large amount of memory. Therefore, the heap has to be increased, which is done by adding
+
+\begin{lstlisting}[language=XML, basicstyle=\scriptsize]
+    android::largeHeap="true"
+\end{lstlisting}
+\noindent
+inside the `\lstinline[language=XML]{<application}' section.\\
+Now, everything should be set up correctly and programming can commence.\\
+After importing the package \lstinline[language=Java]{network.CNNdroid}, the \lstinline[language=Java]{CNNdroid} object is accesible, which can call the function \lstinline[language=Java]{CNNDroid::classify}. This is the keyword to start execution of the trained model. The specification of the model is explained in the following section.
+
+\subsection{Structure Overview of necessary CNNDroid Files}
+\begin{itemize}
+    \item{Layer Blob Files}
+    \item{Definition File}
+    \item{Labels}
+\end{itemize}
+
+\subsection{Convert Trained Models into CNNDroid-compatible Format}
+Short Introduction to MessagePack
+\begin{itemize}
+    \item{how to use convertion script}
+    \item{compatible frameworks}
+    \item{compatible layers}
+\end{itemize}
+
+\subsection{CPU vs GPU performance}
+Comparison of computation time of CPU (sequential) and GPU (parallel) mode on in-memory images using CIFAR10 (in-memory to minimize error using camera, CIFAR10 could be exchanged with CaffeNet if too fast)
