@@ -1,0 +1,80 @@
+root_directory: "/sdcard/Download/berlin_sights_data/"
+allocated_ram: 100
+auto_tuning: "off"
+execution_mode: "parallel"
+
+layer {
+  type: "Convolution"
+  name: "conv1"
+  parameters_file: "model_param_conv1.msg"
+  pad: 2
+  group: 1
+  stride: 1
+}
+
+layer {
+  type: "Pooling"
+  name: "pool1"
+  pool: "max"
+  kernel_size: 3
+  stride: 2
+  pad: 0
+}
+
+layer {
+  type: "BatchNorm"
+  name: "norm1"
+  parameters_file: "model_param_norm1.msg"
+}
+
+layer {
+  type: "ReLU"
+  name: "relu1"
+}
+
+layer {
+  type: "Convolution"
+  name: "conv2"
+  parameters_file: "model_param_conv2.msg"
+  pad: 2
+  group: 1
+  stride: 1
+}
+
+layer {
+  type: "Pooling"
+  name: "pool2"
+  pool: "max"
+  kernel_size: 3
+  stride: 2
+  pad: 0
+}
+
+layer {
+  type: "BatchNorm"
+  name: "norm2"
+  parameters_file: "model_param_norm2.msg"
+}
+
+
+layer {
+  type: "ReLU"
+  name: "relu2"
+}
+
+layer {
+  type: "FullyConnected"
+  name: "ip1"
+  parameters_file: "model_param_ip1.msg"
+}
+
+layer {
+  type: "FullyConnected"
+  name: "ip2"
+  parameters_file: "model_param_ip2.msg"
+}
+
+layer {
+  type: "Softmax"
+  name: "prob"
+}
