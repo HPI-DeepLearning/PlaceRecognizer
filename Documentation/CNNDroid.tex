@@ -5,7 +5,7 @@ CNNDroid is an open source deep learning library for Android. It is able to exec
     \item{Pooling Layer}
     \item{Local Response Normalization Layer}
     \item{Fully-Connected Layer}
-    \item{Rectified Linear Layer}
+    \item{Rectified Linear Unit Layer (ReLU)}
     \item{Softmax Layer}
     \item{Accuracy and Top-K Layer}
 \end{itemize}
@@ -41,11 +41,27 @@ Now, everything should be set up correctly and programming can commence.\\
 After importing the package \lstinline[language=Java]{network.CNNdroid}, the \lstinline[language=Java]{CNNdroid} object is accesible, which can call the function \lstinline[language=Java]{CNNDroid::classify}. This is the keyword to start execution of the trained model. The specification of the model is explained in the following section.
 
 \subsection{Structure Overview of necessary CNNDroid Files}
+Of course, CNNDroid needs to know how to classify an input. For that it either uses converted binary layer files, created by a desktop deep learning framework or internal conversion functions (e.g. for pooling or ReLU).\\
+The layer blobs are generally used for more complicated layers, such as convolutional or fully connected layers, which have a high dimensional and variable amount of variables. These files have to be converted into the MessagePack\footnote{http://msgpack.org/} format and put onto the smartphones storage.\\
+The order in which the layers are executed, additional configurations and layers which don't need a blob file are defined inside the definition file. This file is used as a settings file for the \lstinline[language=Java]{CNNdroid} classifier.\\
+On creation of the \lstinline[language=Java]{CNNdroid} object, the absolute path to this file has to be specified.\\
+Configurations, other than the layer definitions are:
 \begin{itemize}
-    \item{Layer Blob Files}
-    \item{Definition File}
-    \item{Labels}
+    \item{the absolute path to the layer blob files\\(\lstinline[language=Java]{root_directory: "/absolute/path/to/layer/files"})}
+    \item{the maximum amount of RAM the classifier should use on the smartphone\\(\lstinline[language=Java]{allocated_ram: Amount_in_MB})}
+    \item{whether or not automatic performance tuning should be used\\(\lstinline[language=Java]{auto_tuning: "on|off"})}
+    \item{whether or not classification should be GPU accelerated (if possible)\\(\lstinline[language=Java]{execution_mode: "sequential|parallel"})}
 \end{itemize}
+Layers are defined as shown in figure \ref{fig:def_file}.
+
+\begin{figure}
+  \centering
+    \includegraphics[width=0.5\textwidth]{def_file.png}
+  \caption{Excerpt of a CNNDroid definition file}
+  \label{fig:def_file}
+\end{figure}
+
+Not essential for the execution of CNNDroid, but very helpful for processing the final results, is a labels file. This file should specify human-readable names for the extractable classes. The order inside this file should be mapped to the output order of the last layer (probably a fully-connected layer), i.e. the first value of the output array should correspond to the first class name inside the labels file.
 
 \subsection{Convert Trained Models into CNNDroid-compatible Format}
 Short Introduction to MessagePack
