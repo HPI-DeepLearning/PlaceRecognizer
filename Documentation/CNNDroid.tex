@@ -54,7 +54,7 @@ Configurations, other than the layer definitions are:
 \end{itemize}
 Layers are defined as shown in figure \ref{fig:def_file}.
 
-\begin{figure}
+\begin{figure}[H]
   \centering
     \includegraphics[width=0.5\textwidth]{def_file.png}
   \caption{Excerpt of a CNNDroid definition file}
@@ -64,12 +64,19 @@ Layers are defined as shown in figure \ref{fig:def_file}.
 Not essential for the execution of CNNDroid, but very helpful for processing the final results, is a labels file. This file should specify human-readable names for the extractable classes. The order inside this file should be mapped to the output order of the last layer (probably a fully-connected layer), i.e. the first value of the output array should correspond to the first class name inside the labels file.
 
 \subsection{Convert Trained Models into CNNDroid-compatible Format}
-Short Introduction to MessagePack
-\begin{itemize}
-    \item{how to use convertion script}
-    \item{compatible frameworks}
-    \item{compatible layers}
-\end{itemize}
+As mentioned before, CNNDroid uses a format called MessagePack for the layer definitions. MessagePack is a binary serialization format for exchanging data, comparable to JSON\footnote{JavaScript Object Notation}, but other than JSON it is not human-readable. The omission of this constraint makes it possible to reduce size and increase parsing speed of the data stored inside. This is especially important due to the limited storage that most smartphones posess, especially compared to big servers, where deep learning is usually executed.\\
+Figure \ref{fig:json_vs_msgpack} illustrates how MessagePack saves storage space by using types (JSON encodes everything as strings, so for example, `true' uses four Bytes, while it only uses one Byte using MessagePack) and dropping control symbols, like the curly braces \{\}.
+
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=0.5\textwidth]{json_vs_msgpack.png}
+  \caption{Comparison JSON and MsgPack}
+  \label{fig:json_vs_msgpack}
+\end{figure}
+
+In order to convert models from the aforementioned desktop/server deep learning frameworks, CNNDroid provides conversion scripts. The script for Caffe is written in Python and requires the packages \lstinline[language=python]{numpy} and \lstinline[language=python]{msgpack} to be installed.\\
+Three variables need to be defined. The absolute path to the trained model, the deployment prototxt file, which specifies the parameters for the layers, and the saving path.\\
+The output are a couple of files in MessagePack format. The definition and labels file has to be created manually, still. For the definition file, most of the content of the prototxt deployment file can be used. Only some parts of the syntax has to be adapted to a CNNDroid parsable format.
 
 \subsection{CPU vs GPU performance}
 Comparison of computation time of CPU (sequential) and GPU (parallel) mode on in-memory images using CIFAR10 (in-memory to minimize error using camera, CIFAR10 could be exchanged with CaffeNet if too fast)
