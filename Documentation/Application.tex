@@ -12,6 +12,132 @@ How does the camera talk to the Image Classifier?
 How do we get GPS values and how can we integrate them?
 
 \subsection {Wikipedia Parser}
-How do we get the text for a classified image from Wikipedia?
+When our CNNDroid model has come with an image class, we now want to get informations about the place. Wikipedia represent one of the largest source of informations and has a big and active community which update regularly all the informations. Also, the list of features we can grab from wikipedia is long: Descriptions, images, literature etc..
+Also, compared to other API in a technical way, Wikipedia API present three mains advantages:
+\begin{itemize}
+    \item{The use is made by a simple url call}
+    \item{There use no use limitations or constraint}
+    \item{It provides a Json response easily parsable by any program. }
+\end{itemize}
+The wikipedia API is composed by a principal URL which is "https://en.wikipedia.org/w/api.php".Then you can easily change the language of the response by changing the subdomain of the URL. For exemple to get a french Json content, you can call "https://fr.wikipedia.org/w/api.php". Like our application will be useful for tourists, we need to adapt our content to their language.
+Then, the principal URL will be enrich with paramters, like the "format" (xml,json,html) or the "titles" to get informations about a specific page. We will see in the second part of this section which parameters we use to call the wikipedia API.\\\\
+In our program we use two classes:
+\begin{itemize}
+    \item{HttpHandler.java}
+\end{itemize}
+The first class, "HttpHandler.java" is here to create a temporary array of bytes from the url and also catch error to check if it is correct and if it returns a value. In a second time it will convert the response stream as a string value.
+So first, we aim to use the http GET method to open a connection.
+\begin{lstlisting}[language=XML, basicstyle=\scriptsize]
+try {
+    URL url = new URL(reqUrl);
+    HttpURLConnection conn = (HttpURLConnection)
+    url.openConnection();
+    conn.setRequestMethod("GET");
+\end{lstlisting}
+Then we will catch the errors, for the following cases:Incorrect input url, Protocol exception, Input/Output error during the use of the InputStream() function, or if the response is an empty array of bytes.
+\begin{lstlisting}[language=XML, basicstyle=\scriptsize]
+    } catch (MalformedURLException e) {
+            Log.e(TAG, "MalformedURLException: " + e.getMessage());
+        } catch (ProtocolException e) {
+            Log.e(TAG, "ProtocolException: " + e.getMessage());
+        } catch (IOException e) {
+            Log.e(TAG, "IOException: " + e.getMessage());
+        } catch (Exception e) {
+            Log.e(TAG, "Exception: " + e.getMessage());
+\end{lstlisting}
+
+\begin{itemize}
+    \item{GetWiki.java}
+\end{itemize}
+This class is a public class using an asynchronous task. In fact, our classifier will give a class to the image taken by the user, for exemple "Brandenburg Gate" or "Fernsehturm Berlin". Then this label will be used as the input string variable for our GetWiki class. First, the call is made from the mainActivity class, with the following statement:
+\begin{lstlisting}[language=XML, basicstyle=\scriptsize]
+wikipediaInfos = new GetWiki().execute("classLabel")
+\end{lstlisting}
+"classLabel" is a string variable, which is dynamically update with the class given by the classifier. So it is also important to give a reliable class label regarding wikipedia when the model is trained, because this label will be used as a parameter in the url which is called:
+\begin{lstlisting}[language=XML, basicstyle=\scriptsize]
+String urlTitle = strings[0];
+String url = "https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles=" + urlTitle;
+\end{lstlisting}
+The result will consist in a Json array that we need to parse to extract part of the information we want. An expemple of response look like the following:
+\begin{lstlisting}[language=XML, basicstyle=\scriptsize]
+    {"batchcomplete":"","query":{"pages":{"156604":{"pageid":156604,"ns":0,"title":"Brandenburg Gate","extract":"The Brandenburg Gate (German: Brandenburger Tor) is an 18th-century neoclassical monument in Berlin, and one of the best-known landmarks of Germany. It is built on the site of a former city gate that marked the start of the road from Berlin to the town of Brandenburg an der Havel....\n"}}}}
+\end{lstlisting}
+We truncated the response to keep only the variable we actually use like the title and the description. As you can the response give us several Json levels/objects. We will use the JsonObject package given in the Android API 25, to parse our Json response. In our example, we would like to get all informations contained the 156606:{ object. The problem is that we can't guess the Id of the page, so we will do like this:
+\begin{lstlisting}[language=XML, basicstyle=\scriptsize]
+JSONObject jsonObj = new JSONObject(jsonStr);
+JSONObject query = jsonObj.getJSONObject("query");
+JSONObject pages = query.getJSONObject("pages");
+Iterator<String> keys = pages.keys();
+String pageId= keys.next();
+JSONObject page = pages.getJSONObject(pageId);
+String title = page.getString("title");
+String extract = page.getString("extract");
+\end{lstlisting}
+First, we get the response into a JsonObject class variable. Then we can use string parameters to navigate through the Json file. If we have an object that is not static, like the Id of the page, we use an Iterator keys which will return the value for this Json Object, here it will give us the pageId (156606) as a string. Then we just have to say that we want to go to the next value of the json array using keys.next().\\
+Finally, we get the string value of the response and store them into variables.
+
+\subsection{Text to speech}
+To enhance the user experience of our app, as it is used to recognise famous places, we had a look on how to allow the user to play an audio description of the place while is watching it. Android SDK provide a very useful package:
+\begin{lstlisting}[language=XML, basicstyle=\scriptsize]
+import android.speech.tts.TextToSpeech
+\end{lstlisting}
+which has built in methods to parse a string value and read it as an audio track. It can easily be implemented with few lines, following these steps:\\\\
+First, you need to declare a TTS (text to speech) object, and set the attributes. Let's say in our exemple that "t1" is our object. Many attributes can be changed, like the languages, the speed of the audio, the voice type.We declare in the following snippet the variable 't1' as a new text to speech object in our class context, giving the langage Locale.UK
+\begin{lstlisting}[language=XML, basicstyle=\scriptsize]
+t1=new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if(status != TextToSpeech.ERROR) {
+                    t1.setLanguage(Locale.UK);
+                }
+            }
+        });
+\end{lstlisting}
+Then, you need to get the string variable you want to convert as an audio file. In the following snippet we get the wikipedia description of Branderbuge Gate from our wikipedia API parser (see the previous part)
+\begin{lstlisting}[language=XML, basicstyle=\scriptsize]
+String toSpeak = null;
+try {
+toSpeak = new GetWiki().execute("Brandenburg_Gate").get().descritpion;
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    } catch (ExecutionException e) {
+      e.printStackTrace();
+    }
+\end{lstlisting}
+
+Finally, you can use the speak() method from your object, with the queue mode (QUEUE FLUSH) which means that media to be played are dropped and replaced by the new entry each time you call this method.
+
+\begin{lstlisting}[language=XML, basicstyle=\scriptsize]
+t1.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, null , "test");
+\end{lstlisting}
+
+\subsection{Firebase API}
+Firebase is a Google service which provide a realtime database and backend as a service. The service is really well integrated with Android.  The data is stored on Firebase's cloud and the Firebase SDK for android comes up with several method to store and synchronised in real time all the data.
+
+\begin{itemize}
+    \item {How we use it}
+\end{itemize}
+
+First, we declare in the build.gradle at the app level the use of Firebase service.
+\begin{lstlisting}[language=XML, basicstyle=\scriptsize]
+compile 'com.google.firebase:firebase-core:10.0.1'
+compile 'com.google.firebase:firebase-database:10.0.1'
+\end{lstlisting}
+
+Then, like the GooglePlaceAPI, we need to settle an object of type database to start the connection with our database instance.
+
+\begin{lstlisting}[language=XML, basicstyle=\scriptsize]
+private FirebaseAuth mAuth;
+private FirebaseAuth.AuthStateListener mAuthListener;
+DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+\end{lstlisting}
+
+The Firebase structure use path to store the data. For exemple, you will have the top level path "users", then each users of you app, and for each users, some features. To store or read data, the method will look like this:
+
+\begin{lstlisting}[language=XML, basicstyle=\scriptsize]
+database.child("users").child(userId).child("places").push("location");
+
+\end{lstlisting}
+You need to define all the levels you want to have access to. Here we first access the "users" node, then getting the current user ID, and we upload the locations details of his visit into the "places" node.
 
 \subsection{How to setup project in Android Studio}

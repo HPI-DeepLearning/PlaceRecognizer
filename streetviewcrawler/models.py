@@ -30,7 +30,7 @@ class Pano(me.Document):
     def url(self):
         loc = self.location or self.longlat
         return generate_pano_url(loc, self.heading, self.fov, self.pitch, self.size, self.pano_id)
-    
+
     @property
     def image_md5(self):
         '''return the md5 hash of the stored image'''
