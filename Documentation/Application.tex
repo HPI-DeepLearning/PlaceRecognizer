@@ -25,7 +25,16 @@ The output array can now be passed to our \texttt{ImageClassifier::accuracy} fun
 Per default the \texttt{classify} function returns a \texttt{Classification} object, which contains the ID, probability and label of the best match found. The values can be extracted with \texttt{Classification::get\_id()}, \texttt{Classification::get\_label()} and \texttt{Classification::get\_probability()}.
 
 \subsection {Real-Time Frame Capture}
-How does the camera talk to the Image Classifier?
+The \texttt{CameraFrameCapture} class is based on the Camera2 Android API. It is a specialized version of the Camera2Basic example\footnote{https://github.com/googlesamples/android-Camera2Basic}.\\
+The most important part is the preview of the camera image and the processing of each frame that comes out of it. For that, we create a CaptureRequest inside the \texttt{createCameraPreviewSession} function. This CaptureRequest needs to be rendered in order to access the image data. This is done by calling
+\begin{lstlisting}[language=Java, basicstyle=\scriptsize]
+    mPreviewRequestBuilder.addTarget(surface);
+    mPreviewRequestBuilder.addTarget(mImageReader.getSurface());
+\end{lstlisting}
+
+The first part makes the image visible inside the application. The second part passes the image to our imageReader.\\
+The imageReader has an \texttt{OnImageAvailableListener} callback, which is executed every time the imageReader receives a new image (i.e. every frame). The image provided by the API is in YUV-format\footnote{https://en.wikipedia.org/wiki/YUV}. To process the pixels, we need to convert them into RGB. This is done by saving the byte array into a YuvImage object, which has the ability to convert itself into jpeg, which contains RGB-values and can be decoded into a bitmap object. This bitmap object can now be passed to our classifier.\\
+Right now, we only classify the image and use the debug information to evaluate the result. A function \texttt{getCurrentFrame} is also provided, which is a getter function for the bitmap image, so that other classes, like the \texttt{MainActivity} class or the \texttt{ImageClassifier} can use the image.
 
 \subsection {GPS Logger}
 The \texttt{GPSTracker} class provides the possibility to use the smart phones GPS receiver to get the current location. The \texttt{GPSTracker::getLocation()} function handles permission requests to the user, who has to allow our application to use location services and uses Androids \texttt{LocationManager} to receive the current location.\\

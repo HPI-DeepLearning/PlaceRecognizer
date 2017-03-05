@@ -1,11 +1,8 @@
 \section{Outlook}
 We have several ideas to improve our application.\\
 
-Second, we can improve the design of the app. Android studio come with some pre-code views that can be first use.\\
-
-Compute real time recognition.\\
-
-Then, as it is a application dedicated to recognize famous places around the world, a good idea is to be able to handle multiple languages for the wikipedia parser. In the project structure, multiple languages can be handled by using resource files with translations.
+Right now the application is very basic. It only contains two buttons which call the most essential functions and show the most essential information. Improvements of the visualization, like showing the camera image in full screen and switching to the information pane on getting a result, providing an option page, for example for switching language or user or possibilities to receive further information about a recognized place by showing links to Wikipedia or Google could add a lot of user experience to the application.\\
+Because our application is aimed at international tourists, it is a good idea to localize it. This can be achieved by providing translation resource files, which cold look like this:
 \begin{lstlisting}[language=XML, basicstyle=\scriptsize]
     #/values/strings.xml:
     <resources>
@@ -24,3 +21,5 @@ Also for the Wikipedia parser, we can get the phone language with a simple line 
 \begin{lstlisting}
     Locale.getDefault().getDisplayLanguage();
 \end{lstlisting}
+
+Lastly, a naive solution for improving the recognition results, especially if many objects are nearby is pre-filtering the possible results using the current position and only allowing results that are within a certain radius. A more complex approach would be to include the coordinates into the training itself. That means that a result is not only based on computing pixel values, but also considers the current position. This would provide an additional degree of confidence into the calculated result.\\

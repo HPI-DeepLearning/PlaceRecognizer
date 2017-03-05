@@ -1,4 +1,4 @@
-\section{Google Streetview Crawler}
+\section{Image Crawler}
 Classification of real-world images requires a very big dataset for the learning process beforehand. Google Streetview provides 360 degree images from many places in all German urban areas. Using sophisticated crawling techniques, a huge amount of image data can be extracted from these, so called, `Photospheres'.\\
 This chapter describes how we used the Google Streetview and other image APIs to crawl images from famous sights in Berlin.
 
@@ -44,7 +44,7 @@ For our project, we use several APIs from Google which help us to get additional
 \subsubsection{Place Detection API}
 The place detection API allows us to discover places close to where the device is located. These are all places registered in Google including local businesses, points of interest, and geographic locations. This API will return a maximum of 10 probable places.
 Another very interesting use is that it can help us determinate if our prediction is relevant, by comparing our classification with the results from this function.
-
+\newpage
 \subsubsection{How to use it in Android}
 The first step is to get an API key from Google\footnote{https://developers.google.com/}. To get the API key, you need to register on the developer console from Google. This platform is used to access every Google API registered by your company.
 
@@ -126,6 +126,7 @@ Finally, we navigate through the JSON response to get the URL.
             console.log(obj);
         }
 \end{lstlisting}
+\newpage
 The response return will be as follows.\\
 \\
 \includegraphics{jsonShutter}
