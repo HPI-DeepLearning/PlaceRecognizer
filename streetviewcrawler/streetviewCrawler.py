@@ -60,22 +60,22 @@ if __name__ == '__main__':
                     if meta_content["status"] != 'OK':
                         has_error = True
 
-                    lat2 = math.radians(float(row['buildingLat']))
-                    long2 = math.radians(float(row['buildingLong']))
-                    lat1 = math.radians(float(meta_content["location"]["lat"]))
-                    long1 = math.radians(float(meta_content["location"]["lng"]))
-
-                    dLong = long1 - long2
-                    y = math.sin(dLong) * math.cos(lat2)
-                    x = math.cos(lat1) * math.sin(lat2) - math.sin(lat1) * math.cos(lat2) * math.cos(dLong)
-                    bearing = math.atan2(y, x)
-
-                    bearing = math.degrees(bearing)
-                    bearing = (bearing + 360) % 360
-                    bearing = 360 - bearing + headingOffset
-
                     if float(row["starthead"]) != 0 and float(row['endhead']) != 0:
                         bearing = float(row["starthead"]) + headings
+                    else:
+                        lat2 = math.radians(float(row['buildingLat']))
+                        long2 = math.radians(float(row['buildingLong']))
+                        lat1 = math.radians(float(meta_content["location"]["lat"]))
+                        long1 = math.radians(float(meta_content["location"]["lng"]))
+
+                        dLong = long1 - long2
+                        y = math.sin(dLong) * math.cos(lat2)
+                        x = math.cos(lat1) * math.sin(lat2) - math.sin(lat1) * math.cos(lat2) * math.cos(dLong)
+                        bearing = math.atan2(y, x)
+
+                        bearing = math.degrees(bearing)
+                        bearing = (bearing + 360) % 360
+                        bearing = 360 - bearing + headingOffset
 
                     params.append(((float(meta_content["location"]["lng"]), float(meta_content["location"]["lat"])), bearing))
                     l = len(params)

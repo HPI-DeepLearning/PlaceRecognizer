@@ -1,5 +1,5 @@
 \section {PlaceRecognizer Application}
-Overview: What does it do. Whom is it for. How does it achieve its task?
+After crawling the images and training a model, this section explains how we used all these prerequisites to create an Android application that is capable of classifying images taken with the camera.
 
 \subsection {CNNDroid Integration/Image Classifier}
 Explain ImageClassifier Class; Including Variables that need adaption when changing Layers or DataSets\\
@@ -141,3 +141,4 @@ database.child("users").child(userId).child("places").push("location");
 You need to define all the levels you want to have access to. Here we first access the "users" node, then getting the current user ID, and we upload the locations details of his visit into the "places" node.
 
 \subsection{How to setup project in Android Studio}
+The project should work without any additional work in Android Studio. Simply import it into the IDE, setup an Android emulator or plug in an android phone running at least Android SDK 24.0 and press the ``Run'' button.
