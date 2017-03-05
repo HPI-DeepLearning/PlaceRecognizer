@@ -1,1 +1,26 @@
 \section{Outlook}
+We have several ideas to improve our application.\\
+
+Second, we can improve the design of the app. Android studio come with some pre-code views that can be first use.\\
+
+Compute real time recognition.\\
+
+Then, as it is a application dedicated to recognize famous places around the world, a good idea is to be able to handle multiple languages for the wikipedia parser. In the project structure, multiple languages can be handled by using resource files with translations.
+\begin{lstlisting}[language=XML, basicstyle=\scriptsize]
+    #/values/strings.xml:
+    <resources>
+        <string name="hello_world">Hello World!</string>
+    </resources>
+\end{lstlisting}
+
+\begin{lstlisting}[language=XML, basicstyle=\scriptsize]
+    #/values-es/strings.xml
+    <resources>
+        <string name="hello_world">iHola Mundo!</string>
+    </resources>
+\end{lstlisting}
+
+Also for the Wikipedia parser, we can get the phone language with a simple line of code
+\begin{lstlisting}
+    Locale.getDefault().getDisplayLanguage();
+\end{lstlisting}

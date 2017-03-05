@@ -126,10 +126,10 @@ public class MainActivity extends AppCompatActivity {
         camera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //dispatchTakePictureIntent();
-                getFragmentManager().beginTransaction()
-                        .replace(R.id.container, CameraFrameCapture.newInstance())
-                        .commit();
+                dispatchTakePictureIntent();
+//                getFragmentManager().beginTransaction()
+//                        .replace(R.id.container, CameraFrameCapture.newInstance())
+//                        .commit();
             }
         });
 
@@ -158,22 +158,20 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
-            mImageView.setImageBitmap(imageBitmap);
-            String imageClass = ic.classifyImage(capture.getCurrentFrame()).get_label();
+            //mImageView.setImageBitmap(imageBitmap);
+            String imageClass = ic.classifyImage(imageBitmap).get_label();//capture.getCurrentFrame()).get_label();
             System.out.println(imageClass);
-//            textView.setText(imageClass);
-//            try {
-////                textView.setText(new GetWiki().execute(imageClass).get().descritpion);
-//                //textView.setTextSize(24);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            } catch (ExecutionException e) {
-//                e.printStackTrace();
-//            }
+            textView.setText(imageClass);
+            try {
+                textView.setText(new GetWiki().execute(imageClass).get().descritpion);
+                //textView.setTextSize(24
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
         }
     }
-
-    @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[],
                                            int[] grantResults)

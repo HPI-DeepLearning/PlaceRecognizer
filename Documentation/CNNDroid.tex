@@ -16,14 +16,14 @@ The library also supports a variety of customizations, like maximum memory usage
 CNNDroid is a source code library. That means that integration into an existing Android Project is fairly straight forward and doesn't require any third-party dependencies.\\
 The only prerequisites are:
 \begin{itemize}
-    \item{A functional Android development environment (e.g. Android Studio\footnote{\url{https://developer.android.com/studio/index.html}})}
+    \item{A functional Android development environment (e.g. Android Studio\footnote{https://developer.android.com/studio/index.html})}
     \item{Android phone or emulator running at least Android SDK version 21.0 (Lollipop)}
 \end{itemize}
 
-To integrate CNNDroid into the project, the project has to be cloned from its GitHub\footnote{https://github.com/ENCP/CNNdroid} page. Inside the `\texttt{CNNdroid Source Package}' folder, there are three folders. `\texttt{java}', `\texttt{rs}' and `\texttt{libs}'.\\
-The `\texttt{java}' and `\texttt{rs}' folders need to be copied into the your `\texttt{app/src/main/}' directory, merging the `\texttt{java}' folders.\\
-The `\texttt{libs}' folder has to be copied and merged into your `\texttt{app/}' directory.\\
-For effective usage of CNNDroid, it needs read and write access to storage on the smartphone. Android policies require an application to request these permissions before the app starts. These permission requests are specified inside the `\texttt{AndroidManifest.xml}' file. Inside this file, the following lines have to be added before the `\lstinline[language=XML]{<application}' section:
+To integrate CNNDroid into the project, the repository has to be cloned from its GitHub\footnote{https://github.com/ENCP/CNNdroid} page. Inside the \texttt{CNNdroid Source Package}' folder are three folders: \texttt{java}, \texttt{rs} and \texttt{libs}.\\
+The \texttt{java} and \texttt{rs} folders need to be copied into the projects \texttt{app/src/main/} directory, merging the \texttt{java} folders.\\
+The \texttt{libs} folder has to be copied and merged into the \texttt{app/} directory.\\
+For effective usage of CNNDroid, it needs read and write access to storage on the smartphone. Android policies require an application to request these permissions before the app starts. These permission requests are specified inside the \texttt{AndroidManifest.xml} file. Tthe following lines have to be added there before the \lstinline[language=XML]{<application} section:
 
 \begin{lstlisting}[language=XML, basicstyle=\scriptsize]
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
@@ -36,14 +36,14 @@ To cope with the high computational requirements, CNNDroid potentially needs a l
     android::largeHeap="true"
 \end{lstlisting}
 \noindent
-inside the `\lstinline[language=XML]{<application}' section.\\
+inside the \lstinline[language=XML]{<application} section.\\
 Now, everything should be set up correctly and programming can commence.\\
 After importing the package \lstinline[language=Java]{network.CNNdroid}, the \lstinline[language=Java]{CNNdroid} object is accesible, which can call the function \lstinline[language=Java]{CNNDroid::classify}. This is the keyword to start execution of the trained model. The specification of the model is explained in the following section.
 
-\subsection{Structure Overview of necessary CNNDroid Files}
+\subsection{Structure of necessary CNNDroid Files}
 Of course, CNNDroid needs to know how to classify an input. For that it either uses converted binary layer files, created by a desktop deep learning framework or internal conversion functions (e.g. for pooling or ReLU).\\
-The layer blobs are generally used for more complicated layers, such as convolutional or fully connected layers, which have a high dimensional and variable amount of variables. These files have to be converted into the MessagePack\footnote{http://msgpack.org/} format and put onto the smartphones storage.\\
-The order in which the layers are executed, additional configurations and layers which don't need a blob file are defined inside the definition file. This file is used as a settings file for the \lstinline[language=Java]{CNNdroid} classifier.\\
+The layer BLObs\footnote{Binary Large Objects} are generally used for more complicated layers, such as convolutional or fully connected layers, which have high dimensional variables (weight matrices). These files have to be converted into the MessagePack\footnote{http://msgpack.org/} format and put onto the smartphones storage.\\
+The order in which the layers are executed, additional configurations and layers which do not need a BLOb file are defined inside the definition file. This file is used as a settings file for the \lstinline[language=Java]{CNNdroid} classifier.\\
 On creation of the \lstinline[language=Java]{CNNdroid} object, the absolute path to this file has to be specified.\\
 Configurations, other than the layer definitions are:
 \begin{itemize}
@@ -61,7 +61,7 @@ Layers are defined as shown in figure \ref{fig:def_file}.
   \label{fig:def_file}
 \end{figure}
 
-Not essential for the execution of CNNDroid, but very helpful for processing the final results, is a labels file. This file should specify human-readable names for the extractable classes. The order inside this file should be mapped to the output order of the last layer (probably a fully-connected layer), i.e. the first value of the output array should correspond to the first class name inside the labels file.
+Not essential for the execution of CNNDroid, but very helpful for processing the final results, is a labels file. This file should specify human-readable names for the extractable classes. The order inside this file should be mapped to the output order of the last layer (probably a fully-connected layer), i.e. the first value of the output array should correspond to the first class name inside the labels file. The class names should be newline-separated.
 
 \subsection{Convert Trained Models into CNNDroid-compatible Format}
 As mentioned before, CNNDroid uses a format called MessagePack for the layer definitions. MessagePack is a binary serialization format for exchanging data, comparable to JSON\footnote{JavaScript Object Notation}, but other than JSON it is not human-readable. The omission of this constraint makes it possible to reduce size and increase parsing speed of the data stored inside. This is especially important due to the limited storage that most smartphones posess, especially compared to big servers, where deep learning is usually executed.\\
@@ -74,9 +74,33 @@ Figure \ref{fig:json_vs_msgpack} illustrates how MessagePack saves storage space
   \label{fig:json_vs_msgpack}
 \end{figure}
 
-In order to convert models from the aforementioned desktop/server deep learning frameworks, CNNDroid provides conversion scripts. The script for Caffe is written in Python and requires the packages \lstinline[language=python]{numpy} and \lstinline[language=python]{msgpack} to be installed.\\
-Three variables need to be defined. The absolute path to the trained model, the deployment prototxt file, which specifies the parameters for the layers, and the saving path.\\
-The output are a couple of files in MessagePack format. The definition and labels file has to be created manually, still. For the definition file, most of the content of the prototxt deployment file can be used. Only some parts of the syntax has to be adapted to a CNNDroid parsable format.
-
+In order to convert models from the aforementioned desktop/server deep learning frameworks, CNNDroid provides conversion scripts, which can be found in the \texttt{CNNDroid/Parameter Generation Scripts/} folder. The script for Caffe is written in Python and requires the packages \lstinline[language=python]{numpy} and \lstinline[language=python]{msgpack} to be installed.\\
+Three variables need to be defined.
+\begin{itemize}
+  \item{\texttt{MODEL\_FILE} - The absolute path to the trained model}
+  \item{\texttt{MODEL\_NET} - The absolute path the deployment prototxt file, which specifies the parameters for the layers}
+  \item{\texttt{SAVE\_TO} - The saving path}
+\end{itemize}
+The output are converted layer files in MessagePack format. The definition and label files have to be created manually. For the definition file, most of the content of the prototxt deployment file can be used. Only some parts of the syntax have to be adapted to a CNNDroid parsable format.\\
+\newpage
 \subsection{CPU vs GPU performance}
-Comparison of computation time of CPU (sequential) and GPU (parallel) mode on in-memory images using CIFAR10 (in-memory to minimize error using camera, CIFAR10 could be exchanged with CaffeNet if too fast)
+For a comparison of the sequential and parallel mode of CNNDroid we used the Android emulator using 2 GB of RAM. We used the berlin sights classifier, provided in the berlin\_sights\_data folder.
+
+\begin{center}
+  \begin{tabular}{l|c|r}
+    layer & sequential time in ms & parallel time in ms \\
+    conv1 & 277 & 75\\
+    pool1 & 22 & 47\\
+    relu1 & 1 & 1\\
+    conv2 & 299 & 27\\
+    pool2 & 8 & 23\\
+    conv3 & 161 & 24\\
+    pool3 & 4 & 6\\
+    ip1 & 1 & 5\\
+    ip2 & 0 & 0\\
+    prob & 0 & 0\\
+    sum & 773 & 208\\
+  \end{tabular}
+\end{center}
+
+We can see that especially the more complicated convolutional layers profit from the additional speed of the GPU. Copying data from the RAM to GPU memory is usually very high, which is why the sequential mode can be faster for layers that do not do a lot of processing. In general, the parallel, GPU-accelerated processing speed is about three times faster than sequential, CPU-only processing.
