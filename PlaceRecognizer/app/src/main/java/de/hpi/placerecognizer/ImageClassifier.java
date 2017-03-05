@@ -23,7 +23,7 @@ class ImageClassifier {
     private CNNdroid conv = null;
     RenderScript rs = null;
     private String[] labels;
-    final private String rootpath = Environment.getExternalStorageDirectory().getPath()+"/Download/";
+    final private String rootpath = Environment.getExternalStorageDirectory().getPath()+"/Download/berlin_sights_data/";
 
     Classification classifyImage(Bitmap bmp) {
         int imageWidth = 80;
@@ -32,7 +32,7 @@ class ImageClassifier {
         Bitmap bmp1 = Bitmap.createScaledBitmap(bmp, imageHeight, imageWidth, false);
         ParamUnpacker pu = new ParamUnpacker();
 
-        //float[][][] mean = (float[][][]) pu.unpackerFunction(rootpath + "Data_Cifar10/mean.msg", float[][][].class);
+        //float[][][] mean = (float[][][]) pu.unpackerFunction(rootpath + "/mean.msg", float[][][].class);
         float[][][][] inputBatch = new float[1][3][imageHeight][imageWidth];
 
         for (int j = 0; j < imageHeight; ++j) {
@@ -54,13 +54,13 @@ class ImageClassifier {
             }
             System.out.println();
         }
-        //System.out.println("Sum: " + sum);
+
         return getBestMatch(output[0]);
     }
 
     private void readLabels() {
         List<String> labelsList = new ArrayList<String>();
-        File f = new File(rootpath + "berlin_sights_data/labels.txt");
+        File f = new File(rootpath + "labels.txt");
         Scanner s;
         int iter = 0;
 
@@ -80,7 +80,7 @@ class ImageClassifier {
         @Override
         protected CNNdroid doInBackground(RenderScript... params) {
             try {
-                conv = new CNNdroid(rs, rootpath + "berlin_sights_data/BerlinSights_def.txt");
+                conv = new CNNdroid(rs, rootpath + "BerlinSights_def.txt");
             } catch (Exception e) {
                 e.printStackTrace();
             }

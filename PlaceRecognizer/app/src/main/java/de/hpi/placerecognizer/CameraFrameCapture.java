@@ -228,16 +228,6 @@ public class CameraFrameCapture extends Fragment
                 byte[] imageBytes = out.toByteArray();
                 mImageBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
                 MainActivity.ic.classifyImage(mImageBitmap);
-
-//                imageBitmap.compress(Bitmap.CompressFormat.JPEG, 95, out);
-//
-//                ByteBuffer buffer = image.getPlanes()[0].getBuffer();
-//                byte[] bytes = new byte[buffer.capacity()];
-//                buffer.get(bytes);
-//                Bitmap bitmap = Bitmap.createBitmap(image.getHeight(), image.getWidth(),
-//                        Bitmap.Config.ARGB_8888);
-//                bitmap.copyPixelsFromBuffer(ByteBuffer.wrap(bytes));
-                //BitmapFactory.decodeByteArray(bytes, 0, bytes.length, null);
                 image.close();
             }
         }
@@ -289,37 +279,12 @@ public class CameraFrameCapture extends Fragment
                     break;
                 }
                 case STATE_WAITING_LOCK: {
-//                    Integer afState = result.get(CaptureResult.CONTROL_AF_STATE);
-//                    if (afState == null) {
-//                    } else if (CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED == afState ||
-//                            CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED == afState) {
-//                        // CONTROL_AE_STATE can be null on some devices
-//                        Integer aeState = result.get(CaptureResult.CONTROL_AE_STATE);
-//                        if (aeState == null ||
-//                                aeState == CaptureResult.CONTROL_AE_STATE_CONVERGED) {
-//                            mState = STATE_PICTURE_TAKEN;
-//                        } else {
-//                            runPrecaptureSequence();
-//                        }
-//                    }
                     break;
                 }
                 case STATE_WAITING_PRECAPTURE: {
-                    // CONTROL_AE_STATE can be null on some devices
-//                    Integer aeState = result.get(CaptureResult.CONTROL_AE_STATE);
-//                    if (aeState == null ||
-//                            aeState == CaptureResult.CONTROL_AE_STATE_PRECAPTURE ||
-//                            aeState == CaptureRequest.CONTROL_AE_STATE_FLASH_REQUIRED) {
-//                        mState = STATE_WAITING_NON_PRECAPTURE;
-//                    }
                     break;
                 }
                 case STATE_WAITING_NON_PRECAPTURE: {
-                    // CONTROL_AE_STATE can be null on some devices
-//                    Integer aeState = result.get(CaptureResult.CONTROL_AE_STATE);
-//                    if (aeState == null || aeState != CaptureResult.CONTROL_AE_STATE_PRECAPTURE) {
-//                        mState = STATE_PICTURE_TAKEN;
-//                    }
                     break;
                 }
             }
@@ -419,7 +384,6 @@ public class CameraFrameCapture extends Fragment
     @Override
     public void onViewCreated(final View view, Bundle savedInstanceState) {
         view.findViewById(R.id.camera).setOnClickListener(this);
-//        view.findViewById(R.id.info).setOnClickListener(this);
         mTextureView = (AutoFitTextureView) view.findViewById(R.id.texture);
     }
 
@@ -464,12 +428,7 @@ public class CameraFrameCapture extends Fragment
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
-        if (requestCode == REQUEST_CAMERA_PERMISSION) {
-            if (grantResults.length != 1 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-//                ErrorDialog.newInstance(getString(R.string.request_permission))
-//                        .show(getChildFragmentManager(), FRAGMENT_DIALOG);
-            }
-        } else {
+        if (requestCode != REQUEST_CAMERA_PERMISSION) {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
@@ -529,7 +488,6 @@ public class CameraFrameCapture extends Fragment
                         }
                         break;
                     default:
-//                        Log.e(TAG, "Display rotation is invalid: " + displayRotation);
                 }
 
                 Point displaySize = new Point();
@@ -581,10 +539,7 @@ public class CameraFrameCapture extends Fragment
         } catch (CameraAccessException e) {
             e.printStackTrace();
         } catch (NullPointerException e) {
-            // Currently an NPE is thrown when the Camera2API is used but not supported on the
-            // device this code runs.
-//            ErrorDialog.newInstance(getString(R.string.camera_error))
-//                    .show(getChildFragmentManager(), FRAGMENT_DIALOG);
+            e.printStackTrace();
         }
     }
 
@@ -694,18 +649,12 @@ public class CameraFrameCapture extends Fragment
 
                             // When the session is ready, we start displaying the preview.
                             mCaptureSession = cameraCaptureSession;
-                            //try {
-                                // Auto focus should be continuous for camera preview.
-                                mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE,
-                                        CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
+                            // Auto focus should be continuous for camera preview.
+                            mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE,
+                                    CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
 
-                                // Finally, we start displaying the camera preview.
-                                mPreviewRequest = mPreviewRequestBuilder.build();
-//                                mCaptureSession.setRepeatingRequest(mPreviewRequest,
-//                                        mCaptureCallback, mBackgroundHandler);
-                           // } //catch (CameraAccessException e) {
-                              //  e.printStackTrace();
-                            //}
+                            // Finally, we start displaying the camera preview.
+                            mPreviewRequest = mPreviewRequestBuilder.build();
                         }
 
                         @Override
