@@ -130,10 +130,10 @@ public class MainActivity extends AppCompatActivity {
         camera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dispatchTakePictureIntent();
-//                getFragmentManager().beginTransaction()
-//                        .replace(R.id.container, CameraFrameCapture.newInstance())
-//                        .commit();
+//                dispatchTakePictureIntent();
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.container, CameraFrameCapture.newInstance())
+                        .commit();
             }
         });
 

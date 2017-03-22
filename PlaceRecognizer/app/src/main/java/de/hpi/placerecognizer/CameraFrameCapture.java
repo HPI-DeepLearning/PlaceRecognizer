@@ -208,16 +208,7 @@ public class CameraFrameCapture extends Fragment
         public void onImageAvailable(ImageReader reader) {
             Image image = mImageReader.acquireLatestImage();
             if(image != null) {
-                ByteBuffer buffer = image.getPlanes()[0].getBuffer();
-                byte[] bytes = new byte[buffer.capacity()];
-                buffer.get(bytes);
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                YuvImage yuvImage = new YuvImage(bytes, ImageFormat.NV21, image.getWidth(), image.getHeight(), null);
-                yuvImage.compressToJpeg(new Rect(0, 0, image.getWidth(), image.getHeight()), 50, out);
-                byte[] imageBytes = out.toByteArray();
-                mImageBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-                MainActivity.ic.classifyImage(mImageBitmap);
-                image.close();
+                mBackgroundHandler.post(new ImageClassificationTask(image, MainActivity.ic));
             }
         }
 
@@ -355,7 +346,7 @@ public class CameraFrameCapture extends Fragment
         }
     }
 
-    static public CameraFrameCapture newInstance() {
+    public static CameraFrameCapture newInstance() {
         return new CameraFrameCapture();
     }
 
@@ -441,7 +432,7 @@ public class CameraFrameCapture extends Fragment
                         Arrays.asList(map.getOutputSizes(ImageFormat.JPEG)),
                         new CompareSizesByArea());
                 mImageReader = ImageReader.newInstance(240, 240,
-                        ImageFormat.YUV_420_888, /*maxImages*/2);
+                        ImageFormat.JPEG, /*maxImages*/2);
                 mImageReader.setOnImageAvailableListener(
                         mOnImageAvailableListener, mBackgroundHandler);
 
@@ -621,12 +612,17 @@ public class CameraFrameCapture extends Fragment
 
                             // When the session is ready, we start displaying the preview.
                             mCaptureSession = cameraCaptureSession;
-                            // Auto focus should be continuous for camera preview.
-                            mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE,
-                                    CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
+                            try {
+                                // Auto focus should be continuous for camera preview.
+                                mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE,
+                                        CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
 
-                            // Finally, we start displaying the camera preview.
-                            mPreviewRequest = mPreviewRequestBuilder.build();
+                                // Finally, we start displaying the camera preview.
+                                mPreviewRequest = mPreviewRequestBuilder.build();
+                                mCaptureSession.setRepeatingRequest(mPreviewRequest, mCaptureCallback, mBackgroundHandler);
+                            } catch (CameraAccessException e) {
+                                e.printStackTrace();
+                            }
                         }
 
                         @Override
