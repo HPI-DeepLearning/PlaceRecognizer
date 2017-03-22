@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
@@ -26,6 +27,12 @@ class ImageClassifier {
     final private String rootpath = Environment.getExternalStorageDirectory().getPath()+"/Download/berlin_sights_data/";
 
     Classification classifyImage(Bitmap bmp) {
+        float[][] output = classifyImage_imp(bmp);
+
+        return getBestMatch(output[0]);
+    }
+
+    private float[][] classifyImage_imp(Bitmap bmp) {
         int imageWidth = 80;
         int imageHeight = 80;
 
@@ -44,18 +51,13 @@ class ImageClassifier {
             }
         }
 
-        float[][] output = (float[][]) conv.compute(inputBatch);
-        //String res = accuracy(output[0], labels, 3);
-        float sum = 0;
-        for(int i = 0; i < output.length; i++) {
-            for(int j = 0; j < output[i].length; j++) {
-                System.out.print(output[i][j] + ", ");
-                sum += output[i][j];
-            }
-            System.out.println();
-        }
+        return (float[][]) conv.compute(inputBatch);
+    }
 
-        return getBestMatch(output[0]);
+    Classification[] classifyImage(Bitmap bmp, int topK) {
+        float[][] output = classifyImage_imp(bmp);
+
+        return getTopKresults(output[0], topK);
     }
 
     private void readLabels() {
@@ -124,4 +126,26 @@ class ImageClassifier {
         }
         return new Classification(bestMatch, labels[bestMatch], input_matrix[bestMatch]);
     }
+
+    private Classification[] getTopKresults(float[] input_matrix, int k) {
+        float[] sorted_values = input_matrix.clone();
+        Arrays.sort(sorted_values);
+
+        Classification[] topK = new Classification[k];
+        List<Float> input_list = new ArrayList<>();
+        for (float f: input_matrix) {
+            input_list.add(f);
+        }
+
+        if (BuildConfig.DEBUG && sorted_values.length < k) {
+            throw new RuntimeException("Too few predicted values for getting topK results!");
+        }
+
+        for (int i = 0; i < topK.length; ++i) {
+            int classId = input_list.indexOf(sorted_values[sorted_values.length - i - 1]);
+            topK[i] = new Classification(classId, labels[classId], input_matrix[classId]);
+        }
+        return topK;
+    }
+
 }

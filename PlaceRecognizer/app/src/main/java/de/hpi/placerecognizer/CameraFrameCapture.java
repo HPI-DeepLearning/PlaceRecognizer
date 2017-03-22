@@ -208,7 +208,7 @@ public class CameraFrameCapture extends Fragment
         public void onImageAvailable(ImageReader reader) {
             Image image = mImageReader.acquireLatestImage();
             if(image != null) {
-                mBackgroundHandler.post(new ImageClassificationTask(image, MainActivity.ic));
+                mBackgroundHandler.post(new ImageClassificationTask(image, (MainActivity) getActivity()));
             }
         }
 
@@ -353,7 +353,7 @@ public class CameraFrameCapture extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.activity_gpslogger, container, false);
+        return inflater.inflate(R.layout.placerecognizer_ui, container, false);
     }
 
     @Override
