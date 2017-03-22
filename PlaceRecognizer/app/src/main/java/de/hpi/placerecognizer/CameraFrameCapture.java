@@ -355,6 +355,10 @@ public class CameraFrameCapture extends Fragment
         }
     }
 
+    static public CameraFrameCapture newInstance() {
+        return new CameraFrameCapture();
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
