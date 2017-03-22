@@ -1,3 +1,5 @@
+import os
+
 from models import Pano
 from google_streetview_api import *
 from time import sleep
@@ -8,16 +10,24 @@ import json
 import csv, time, cStringIO
 import math
 import wget
+from PIL import Image
+from resizeimage import resizeimage
+
+from StringIO import StringIO
 
 if __name__ == '__main__':
     import argparse
 
     parser = argparse.ArgumentParser()
     parser.add_argument('csv_path', help='CSV file with header that contains lat-long coordinates')
+    parser.add_argument('destination', help='dir where scraped images shall be put')
     parser.add_argument('-b', '--batch-size', type=int, default=1, help='size of each request batch')
     parser.add_argument('-k', '--key', help='Google StreetView API key')
 
     args = parser.parse_args()
+
+    if not os.path.exists(args.destination):
+        os.makedirs(args.destination)
 
     exp_backoff = 1.
     has_error = False
@@ -35,10 +45,10 @@ if __name__ == '__main__':
                 print '%d done, elapsed %fs' % (i, t2-t1)
                 t2 = t1
 
-            loc = row[args.long], row[args.lat]
+            loc = row['long'], row['lat']
             if loc not in longlats:
                 try:
-                    floc = (float(row[args.long]), float(row[args.lat]))
+                    floc = (float(row['long']), float(row['lat']))
                 except:
                     continue
 
@@ -89,23 +99,19 @@ if __name__ == '__main__':
 
                         for j, (param, rep) in enumerate(zip(params, reps)):
                             if rep.status_code == 200:
-                                fname = row['name'] + "_" + str(locId) + "-" + str(imgId)
-                                f = open(fname + ".png", 'w')
-                                f.write(rep.content)
-                                f.close()
+                                fname = os.path.join(args.destination, row['name'] + "_" + str(locId) + "-" + str(imgId))
 
-                                from PIL import Image
-                                from resizeimage import resizeimage
+                                image_buffer = StringIO()
+                                image_buffer.write(rep.content)
+                                image_buffer.seek(0)
+                                image = Image.open(image_buffer)
 
-                                with open(fname + '.png', 'r+b') as f:
-                                    with Image.open(f) as image:
-                                        cover = resizeimage.resize_cover(image, [image.width * 0.9, image.height * 0.9])
-                                        cover.save(fname + '_medium.png', image.format)
+                                image.save("{}.png".format(fname), format='PNG')
 
-                                with open(fname + '.png', 'r+b') as f:
-                                    with Image.open(f) as image:
-                                        cover = resizeimage.resize_cover(image, [image.width * 0.8, image.height * 0.8])
-                                        cover.save(fname + '_small.png', image.format)
+                                cover = resizeimage.resize_cover(image, [image.width * 0.9, image.height * 0.9])
+                                cover.save(fname + '_medium.png', format='PNG')
+                                cover = resizeimage.resize_cover(image, [image.width * 0.8, image.height * 0.8])
+                                cover.save(fname + '_small.png', format='PNG')
 
                                 imgId = imgId + 1
                             else:
