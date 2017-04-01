@@ -1,6 +1,5 @@
 import os
 
-from models import Pano
 from google_streetview_api import *
 from time import sleep
 
@@ -68,56 +67,58 @@ if __name__ == '__main__':
                     meta_content = json.loads(requests.get(meta_url).text)
 
                     if meta_content["status"] != 'OK':
+                        print "metadata returned error"
                         has_error = True
 
-                    if float(row["starthead"]) != 0 and float(row['endhead']) != 0:
-                        bearing = float(row["starthead"]) + headings
                     else:
-                        lat2 = math.radians(float(row['buildingLat']))
-                        long2 = math.radians(float(row['buildingLong']))
-                        lat1 = math.radians(float(meta_content["location"]["lat"]))
-                        long1 = math.radians(float(meta_content["location"]["lng"]))
+                        if float(row["starthead"]) != 0 and float(row['endhead']) != 0:
+                            bearing = float(row["starthead"]) + headings
+                        else:
+                            lat2 = math.radians(float(row['buildingLat']))
+                            long2 = math.radians(float(row['buildingLong']))
+                            lat1 = math.radians(float(meta_content["location"]["lat"]))
+                            long1 = math.radians(float(meta_content["location"]["lng"]))
 
-                        dLong = long1 - long2
-                        y = math.sin(dLong) * math.cos(lat2)
-                        x = math.cos(lat1) * math.sin(lat2) - math.sin(lat1) * math.cos(lat2) * math.cos(dLong)
-                        bearing = math.atan2(y, x)
+                            dLong = long1 - long2
+                            y = math.sin(dLong) * math.cos(lat2)
+                            x = math.cos(lat1) * math.sin(lat2) - math.sin(lat1) * math.cos(lat2) * math.cos(dLong)
+                            bearing = math.atan2(y, x)
 
-                        bearing = math.degrees(bearing)
-                        bearing = (bearing + 360) % 360
-                        bearing = 360 - bearing + headingOffset
+                            bearing = math.degrees(bearing)
+                            bearing = (bearing + 360) % 360
+                            bearing = 360 - bearing + headingOffset
 
-                    params.append(((float(meta_content["location"]["lng"]), float(meta_content["location"]["lat"])), bearing))
-                    l = len(params)
-                    # build URL
-                    if l >= args.batch_size:
-                        urls = [generate_pano_url(floc, fov=fov, heading=heading, pitch=float(row["pitch"]), key=args.key) for floc, heading in params]
+                        params.append(((float(meta_content["location"]["lng"]), float(meta_content["location"]["lat"])), bearing))
+                        l = len(params)
+                        # build URL
+                        if l >= args.batch_size:
+                            urls = [generate_pano_url(floc, fov=fov, heading=heading, pitch=float(row["pitch"]), key=args.key) for floc, heading in params]
 
-                        reqs = (grequests.get(url) for url in urls)
-                        # send requests and block
-                        reps = grequests.map(reqs)
+                            reqs = (grequests.get(url) for url in urls)
+                            # send requests and block
+                            reps = grequests.map(reqs)
 
-                        for j, (param, rep) in enumerate(zip(params, reps)):
-                            if rep.status_code == 200:
-                                fname = os.path.join(args.destination, row['name'] + "_" + str(locId) + "-" + str(imgId))
+                            for j, (param, rep) in enumerate(zip(params, reps)):
+                                if rep.status_code == 200:
+                                    fname = os.path.join(args.destination, row['name'] + "_" + str(locId) + "-" + str(imgId))
 
-                                image_buffer = StringIO()
-                                image_buffer.write(rep.content)
-                                image_buffer.seek(0)
-                                image = Image.open(image_buffer)
+                                    image_buffer = StringIO()
+                                    image_buffer.write(rep.content)
+                                    image_buffer.seek(0)
+                                    image = Image.open(image_buffer)
 
-                                image.save("{}.png".format(fname), format='PNG')
+                                    image.save("{}.png".format(fname), format='PNG')
 
-                                cover = resizeimage.resize_cover(image, [image.width * 0.9, image.height * 0.9])
-                                cover.save(fname + '_medium.png', format='PNG')
-                                cover = resizeimage.resize_cover(image, [image.width * 0.8, image.height * 0.8])
-                                cover.save(fname + '_small.png', format='PNG')
+                                    cover = resizeimage.resize_cover(image, [image.width * 0.9, image.height * 0.9])
+                                    cover.save(fname + '_medium.png', format='PNG')
+                                    cover = resizeimage.resize_cover(image, [image.width * 0.8, image.height * 0.8])
+                                    cover.save(fname + '_small.png', format='PNG')
 
-                                imgId = imgId + 1
-                            else:
-                                print 'error getting %r from %s' % (param, rep.url)
-                                params.append(param)
-                                has_error = True
+                                    imgId = imgId + 1
+                                else:
+                                    print 'error getting %r from %s' % (param, rep.url)
+                                    params.append(param)
+                                    has_error = True
 
                         if has_error:
                             exp_backoff *= 2
