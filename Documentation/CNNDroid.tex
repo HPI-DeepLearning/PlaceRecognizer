@@ -23,7 +23,7 @@ The only prerequisites are:
 To integrate CNNDroid into the project, the repository has to be cloned from its GitHub\footnote{https://github.com/ENCP/CNNdroid} page. Inside the \texttt{CNNdroid Source Package}' folder are three folders: \texttt{java}, \texttt{rs} and \texttt{libs}.\\
 The \texttt{java} and \texttt{rs} folders need to be copied into the projects \texttt{app/src/main/} directory, merging the \texttt{java} folders.\\
 The \texttt{libs} folder has to be copied and merged into the \texttt{app/} directory.\\
-For effective usage of CNNDroid, it needs read and write access to storage on the smartphone. Android policies require an application to request these permissions before the app starts. These permission requests are specified inside the \texttt{AndroidManifest.xml} file. Tthe following lines have to be added there before the \lstinline[language=XML]{<application} section:
+For effective usage of CNNDroid, it needs read and write access to storage on the smartphone. Android policies require an application to request these permissions before the app starts. These permission requests are specified inside the \texttt{AndroidManifest.xml} file. The following lines have to be added there before the \lstinline[language=XML]{<application} section:
 
 \begin{lstlisting}[language=XML, basicstyle=\scriptsize]
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
@@ -38,7 +38,7 @@ To cope with the high computational requirements, CNNDroid potentially needs a l
 \noindent
 inside the \lstinline[language=XML]{<application} section.\\
 Now, everything should be set up correctly and programming can commence.\\
-After importing the package \lstinline[language=Java]{network.CNNdroid}, the \lstinline[language=Java]{CNNdroid} object is accesible, which can call the function \lstinline[language=Java]{CNNDroid::classify}. This is the keyword to start execution of the trained model. The specification of the model is explained in the following section.
+After importing the package \lstinline[language=Java]{network.CNNdroid}, the \lstinline[language=Java]{CNNdroid} object is accessible, which can call the function \lstinline[language=Java]{CNNDroid::classify}. This is the keyword to start execution of the trained model. The specification of the model is explained in the following section.
 
 \subsection{Structure of necessary CNNDroid Files}
 Of course, CNNDroid needs to know how to classify an input. For that it either uses converted binary layer files, created by a desktop deep learning framework or internal conversion functions (e.g. for pooling or ReLU).\\
@@ -64,7 +64,7 @@ Layers are defined as shown in figure \ref{fig:def_file}.
 Not essential for the execution of CNNDroid, but very helpful for processing the final results, is a labels file. This file should specify human-readable names for the extractable classes. The order inside this file should be mapped to the output order of the last layer (probably a fully-connected layer), i.e. the first value of the output array should correspond to the first class name inside the labels file. The class names should be newline-separated.
 
 \subsection{Convert Trained Models into CNNDroid-compatible Format}
-As mentioned before, CNNDroid uses a format called MessagePack for the layer definitions. MessagePack is a binary serialization format for exchanging data, comparable to JSON\footnote{JavaScript Object Notation}, but other than JSON it is not human-readable. The omission of this constraint makes it possible to reduce size and increase parsing speed of the data stored inside. This is especially important due to the limited storage that most smartphones posess, especially compared to big servers, where deep learning is usually executed.\\
+As mentioned before, CNNDroid uses a format called MessagePack for the layer definitions. MessagePack is a binary serialization format for exchanging data, comparable to JSON\footnote{JavaScript Object Notation}, but other than JSON it is not human-readable. The omission of this constraint makes it possible to reduce size and increase parsing speed of the data stored inside. This is especially important due to the limited storage that most smartphones posses, especially compared to big servers, where deep learning is usually executed.\\
 Figure \ref{fig:json_vs_msgpack} illustrates how MessagePack saves storage space by using types (JSON encodes everything as strings, so for example, `true' uses four Bytes, while it only uses one Byte using MessagePack) and dropping control symbols, like the curly braces \{\}.
 
 \begin{figure}[H]

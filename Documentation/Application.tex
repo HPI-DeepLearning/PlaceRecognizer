@@ -44,7 +44,7 @@ The return value is a \texttt{Location} object, which holds a lot of information
 When the CNNDroid classifier calculated an image class, we now want to get information about the place. Wikipedia is one of the largest source of information and has a very big and active community, which regularly updates the articles. Also, the list of features we can grab from Wikipedia is long: Descriptions, images, literature, etc..
 Additionally, compared to other APIs, the Wikipedia API presents three main advantages:
 \begin{itemize}
-    \item{The information is provided by making a simple url request}
+    \item{The information is provided by making a simple URL request}
     \item{There use no usage limitations}
     \item{It provides an easily parsable JSON response}
 \end{itemize}
@@ -110,7 +110,7 @@ First, we put the response into a JsonObject variable. Then we can use the strin
 Finally, we get the string value of the response and store them into variables.
 
 \subsection{Text to speech}
-To enhance the user experience of our app, as it is used to recognise famous places, we had a look into how to allow the user to play an audio description of the places description while they are watching it. The Android SDK provides a useful package for this:
+To enhance the user experience of our app, as it is used to recognize famous places, we had a look into how to allow the user to play an audio description of the places description while they are watching it. The Android SDK provides a useful package for this:
 \begin{lstlisting}[language=XML, basicstyle=\scriptsize]
     import android.speech.tts.TextToSpeech
 \end{lstlisting}
@@ -132,7 +132,7 @@ We can now pass a string, which should be converted into audio, to this object. 
 \begin{lstlisting}[language=XML, basicstyle=\scriptsize]
     String toSpeak = null;
     try {
-    toSpeak = new GetWiki().execute("Brandenburg_Gate").get().descritpion;
+    toSpeak = new GetWiki().execute("Brandenburg_Gate").get().description;
         } catch (InterruptedException e) {
           e.printStackTrace();
         } catch (ExecutionException e) {
@@ -147,7 +147,7 @@ Finally, you can use the speak() method from your object, with the queue mode (\
 \end{lstlisting}
 
 \subsection{Firebase API}
-Firebase is a Google service which providse a realtime database and backend as a service. The service is very well integrated into Android. The data is stored on Firebases cloud and the Firebase SDK for android comes up with several method to store and synchronize data in real time.
+Firebase is a Google service which provides a realtime database and backend as a service. The service is very well integrated into Android. The data is stored on Firebases cloud and the Firebase SDK for android comes up with several method to store and synchronize data in real time.
 
 \subsubsection{How we use it}
 
