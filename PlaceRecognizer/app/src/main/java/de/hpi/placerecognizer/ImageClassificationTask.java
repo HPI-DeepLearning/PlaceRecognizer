@@ -1,24 +1,21 @@
 package de.hpi.placerecognizer;
 
-import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.Image;
-import android.os.HandlerThread;
 import android.text.TextUtils;
-import android.view.View;
 import android.widget.TextView;
 
 import java.nio.ByteBuffer;
 
 
-public class ImageClassificationTask implements Runnable {
+class ImageClassificationTask implements Runnable {
 
     private final Image mImage;
     private final ImageClassifier mClassifier;
     private final MainActivity mActivity;
 
-    public ImageClassificationTask(Image image, MainActivity activity) {
+    ImageClassificationTask(Image image, MainActivity activity) {
         mImage = image;
         mClassifier = MainActivity.ic;
         mActivity = activity;
@@ -45,6 +42,7 @@ public class ImageClassificationTask implements Runnable {
                 public void run() {
                     TextView textView = (TextView) mActivity.findViewById(R.id.classDisplay);
                     textView.setText(resultString);
+                    System.out.println(resultString);
                 }
             });
         } finally {

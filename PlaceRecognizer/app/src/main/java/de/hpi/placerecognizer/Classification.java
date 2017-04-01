@@ -1,6 +1,6 @@
 package de.hpi.placerecognizer;
 
-public class Classification {
+class Classification {
     private int _id;
     private String _label;
     private float _probability;
@@ -10,6 +10,6 @@ public class Classification {
     }
 
     public int get_id() { return _id; }
-    public String get_label() { return _label; }
-    public float get_probability() { return _probability; }
+    String get_label() { return _label; }
+    float get_probability() { return _probability; }
 }

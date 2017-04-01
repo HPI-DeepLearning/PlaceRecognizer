@@ -9,10 +9,9 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.Map;
 
 //Json parser for wikipedia
-public class GetWiki extends AsyncTask<String, Object, LocationDetails> {
+class GetWiki extends AsyncTask<String, Object, LocationDetails> {
 
     private static final String WIK = "WikiActivity";
 
@@ -43,13 +42,11 @@ public class GetWiki extends AsyncTask<String, Object, LocationDetails> {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
                 String date = sdf.format(new Date());
 
-                LocationDetails location = new LocationDetails(title,extract,date);
-                return location;
+                return new LocationDetails(title,extract,date);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
-
         return null;
     }
 

@@ -10,25 +10,17 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.graphics.Point;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
-import android.graphics.YuvImage;
-import android.graphics.drawable.BitmapDrawable;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
-import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.CaptureRequest;
-import android.hardware.camera2.CaptureResult;
-import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
@@ -38,7 +30,6 @@ import android.os.HandlerThread;
 import android.support.annotation.NonNull;
 import android.support.v13.app.FragmentCompat;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
@@ -46,13 +37,7 @@ import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -69,7 +54,7 @@ public class CameraFrameCapture extends Fragment
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
     private static final int MAX_PREVIEW_WIDTH = 1080;
     private static final int MAX_PREVIEW_HEIGHT = 1920;
-    private static final String FRAGMENT_DIALOG = "Test";
+    private static final String FRAGMENT_DIALOG = "";
 
     static {
         ORIENTATIONS.append(Surface.ROTATION_0, 90);
@@ -77,26 +62,6 @@ public class CameraFrameCapture extends Fragment
         ORIENTATIONS.append(Surface.ROTATION_180, 270);
         ORIENTATIONS.append(Surface.ROTATION_270, 180);
     }
-
-    /**
-     * Camera state: Showing camera preview.
-     */
-    private static final int STATE_PREVIEW = 0;
-
-    /**
-     * Camera state: Waiting for the focus to be locked.
-     */
-    private static final int STATE_WAITING_LOCK = 1;
-
-    /**
-     * Camera state: Waiting for the exposure to be precapture state.
-     */
-    private static final int STATE_WAITING_PRECAPTURE = 2;
-
-    /**
-     * Camera state: Waiting for the exposure state to be something other than precapture.
-     */
-    private static final int STATE_WAITING_NON_PRECAPTURE = 3;
 
     private final TextureView.SurfaceTextureListener mSurfaceTextureListener
             = new TextureView.SurfaceTextureListener() {
@@ -147,8 +112,6 @@ public class CameraFrameCapture extends Fragment
      * The {@link android.util.Size} of camera preview.
      */
     private Size mPreviewSize;
-
-    private Bitmap mImageBitmap;
 
     /**
      * {@link CameraDevice.StateCallback} is called when {@link CameraDevice} changes its state.
@@ -211,7 +174,6 @@ public class CameraFrameCapture extends Fragment
                 mBackgroundHandler.post(new ImageClassificationTask(image, (MainActivity) getActivity()));
             }
         }
-
     };
 
     /**
@@ -225,78 +187,16 @@ public class CameraFrameCapture extends Fragment
     private CaptureRequest mPreviewRequest;
 
     /**
-     * The current state of camera state for taking pictures.
-     *
-     * @see #mCaptureCallback
-     */
-    private int mState = STATE_PREVIEW;
-
-    /**
      * A {@link Semaphore} to prevent the app from exiting before closing the camera.
      */
     private Semaphore mCameraOpenCloseLock = new Semaphore(1);
-
-    /**
-     * Orientation of the camera sensor
-     */
-    private int mSensorOrientation;
 
     /**
      * A {@link CameraCaptureSession.CaptureCallback} that handles events related to JPEG capture.
      */
     private CameraCaptureSession.CaptureCallback mCaptureCallback
             = new CameraCaptureSession.CaptureCallback() {
-
-        private void process(CaptureResult result) {
-            switch (mState) {
-                case STATE_PREVIEW: {
-                    // We have nothing to do when the camera preview is working normally.
-                    break;
-                }
-                case STATE_WAITING_LOCK: {
-                    break;
-                }
-                case STATE_WAITING_PRECAPTURE: {
-                    break;
-                }
-                case STATE_WAITING_NON_PRECAPTURE: {
-                    break;
-                }
-            }
-        }
-
-        @Override
-        public void onCaptureProgressed(@NonNull CameraCaptureSession session,
-                                        @NonNull CaptureRequest request,
-                                        @NonNull CaptureResult partialResult) {
-            process(partialResult);
-        }
-
-        @Override
-        public void onCaptureCompleted(@NonNull CameraCaptureSession session,
-                                       @NonNull CaptureRequest request,
-                                       @NonNull TotalCaptureResult result) {
-            process(result);
-        }
-
     };
-
-    /**
-     * Shows a {@link Toast} on the UI thread.
-     *
-     * @param text The message to show
-     */
-    private void showToast(final String text) {
-        final Activity activity = getActivity();
-        if (activity != null) {
-            activity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(activity, text, Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
-    }
 
     /**
      * Given {@code choices} of {@code Size}s supported by a camera, choose the smallest one that
@@ -415,6 +315,7 @@ public class CameraFrameCapture extends Fragment
      */
     private void setUpCameraOutputs(int width, int height) {
         Activity activity = getActivity();
+        int mSensorOrientation;
         CameraManager manager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
         try {
             for (String cameraId : manager.getCameraIdList()) {
@@ -466,9 +367,13 @@ public class CameraFrameCapture extends Fragment
                 int maxPreviewHeight = displaySize.y;
 
                 if (swappedDimensions) {
+                    //noinspection SuspiciousNameCombination
                     rotatedPreviewWidth = height;
+                    //noinspection SuspiciousNameCombination
                     rotatedPreviewHeight = width;
+                    //noinspection SuspiciousNameCombination
                     maxPreviewWidth = displaySize.y;
+                    //noinspection SuspiciousNameCombination
                     maxPreviewHeight = displaySize.x;
                 }
 
@@ -499,9 +404,7 @@ public class CameraFrameCapture extends Fragment
                 mCameraId = cameraId;
                 return;
             }
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-        } catch (NullPointerException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -628,7 +531,6 @@ public class CameraFrameCapture extends Fragment
                         @Override
                         public void onConfigureFailed(
                                 @NonNull CameraCaptureSession cameraCaptureSession) {
-                            showToast("Failed");
                         }
                     }, null
             );
@@ -718,9 +620,5 @@ public class CameraFrameCapture extends Fragment
                             })
                     .create();
         }
-    }
-
-    public Bitmap getCurrentFrame() {
-        return mImageBitmap;
     }
 }

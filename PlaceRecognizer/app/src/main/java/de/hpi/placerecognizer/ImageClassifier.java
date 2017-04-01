@@ -9,11 +9,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
-import messagepack.ParamUnpacker;
 import network.CNNdroid;
 
 import static android.graphics.Color.blue;
@@ -36,10 +34,12 @@ class ImageClassifier {
         int imageWidth = 80;
         int imageHeight = 80;
 
-        Bitmap bmp1 = Bitmap.createScaledBitmap(bmp, imageHeight, imageWidth, false);
-        ParamUnpacker pu = new ParamUnpacker();
+        Bitmap bmp1 = Bitmap.createScaledBitmap(bmp, imageWidth, imageHeight, false);
 
-        //float[][][] mean = (float[][][]) pu.unpackerFunction(rootpath + "/mean.msg", float[][][].class);
+        //uncomment this if you want to use a mean file
+        /*ParamUnpacker pu = new ParamUnpacker();
+        float[][][] mean = (float[][][]) pu.unpackerFunction(rootpath + "/mean.msg", float[][][].class);*/
+
         float[][][][] inputBatch = new float[1][3][imageHeight][imageWidth];
 
         for (int j = 0; j < imageHeight; ++j) {
@@ -61,10 +61,9 @@ class ImageClassifier {
     }
 
     private void readLabels() {
-        List<String> labelsList = new ArrayList<String>();
+        List<String> labelsList = new ArrayList<>();
         File f = new File(rootpath + "labels.txt");
         Scanner s;
-        int iter = 0;
 
         try {
             s = new Scanner(f);
@@ -90,32 +89,6 @@ class ImageClassifier {
             System.out.println("DONE");
             return conv;
         }
-    }
-
-    private String accuracy(float[] input_matrix, String[] labels, int topk) {
-        String result = "";
-        int max_num[] = new int[labels.length];
-        Arrays.fill(max_num, -1);
-        float[] max = new float[topk];
-
-        for (int k = 0; k < topk ; ++k) {
-            for (int i = 0; i < labels.length; ++i) {
-                if (input_matrix[i] > max[k]) {
-                    boolean newVal = true;
-                    for (int j = 0; j < topk; ++j)
-                        if (i == max_num[j])
-                            newVal = false;
-                    if (newVal) {
-                        max[k] = input_matrix[i];
-                        max_num[k] = i;
-                    }
-                }
-            }
-        }
-
-        for (int i = 0 ; i < topk ; i++)
-            result += labels[max_num[i]]  + ", P = " + max[i] * 100 + " %\n\n";
-        return result;
     }
 
     private Classification getBestMatch(float[] input_matrix) {
@@ -147,5 +120,4 @@ class ImageClassifier {
         }
         return topK;
     }
-
 }
