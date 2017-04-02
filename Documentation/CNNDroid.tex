@@ -41,7 +41,7 @@ Now, everything should be set up correctly and programming can commence.\\
 After importing the package \lstinline[language=Java]{network.CNNdroid}, the \lstinline[language=Java]{CNNdroid} object is accessible, which can call the function \lstinline[language=Java]{CNNDroid::classify}. This is the keyword to start execution of the trained model. The specification of the model is explained in the following section.
 
 \subsection{Structure of necessary CNNDroid Files}
-Of course, CNNDroid needs to know how to classify an input. For that it either uses converted binary layer files, created by a desktop deep learning framework or internal conversion functions (e.g. for pooling or ReLU).\\
+Of course, CNNDroid needs to know how to classify an input. For that it either uses converted binary layer files, created by a desktop deep learning framework, or internal conversion functions (e.g. for pooling or ReLU).\\
 The layer BLObs\footnote{Binary Large Objects} are generally used for more complicated layers, such as convolutional or fully connected layers, which have high dimensional variables (weight matrices). These files have to be converted into the MessagePack\footnote{http://msgpack.org/} format and put onto the smartphones storage.\\
 The order in which the layers are executed, additional configurations and layers which do not need a BLOb file are defined inside the definition file. This file is used as a settings file for the \lstinline[language=Java]{CNNdroid} classifier.\\
 On creation of the \lstinline[language=Java]{CNNdroid} object, the absolute path to this file has to be specified.\\
@@ -63,6 +63,16 @@ Layers are defined as shown in figure \ref{fig:def_file}.
 
 Not essential for the execution of CNNDroid, but very helpful for processing the final results, is a labels file. This file should specify human-readable names for the extractable classes. The order inside this file should be mapped to the output order of the last layer (probably a fully-connected layer), i.e. the first value of the output array should correspond to the first class name inside the labels file. The class names should be newline-separated.
 
+\subsection{Training the model}
+We trained our deep learning model based on crawled images with the caffe framework. The training occurred on an HPI server (accessible under the IP 172.16.18.178 and username msws2016t1). Caffe is already installed there and a variety of crawled images, as well as a labels file with the paths to each image are available inside the \texttt{training\_data} folder. Inside the same folder you can also find the \texttt{training\_full.sh} script, which can be executed to start the training and create a model.\\
+An example model can be found in the \texttt{training\_data/berlin\_sights\_model} folder.\\
+In order to test the model quickly, caffe provides an ipython notebook on their Github repository. This repository is checked out in the \texttt{caffe} folder. To start the notebook an ssh-tunnel has to be created to your local machine, e.g. using\\\\
+\texttt{ssh -N -f -L localhost:8888:localhost:8889 msws2016t1@172.16.18.178}\\\\
+Using a normal ssh connection to the server, the notebook can be executed with the command\\\\
+\texttt{ipython notebook --no-browser --port=8889}\\\\
+and viewed in a webbrowser on the local machine under the address \texttt{localhost:8888}.\\
+The notebook itself provides possibilities to classify an image downloaded from a web address, view the output of specific layers and more.
+
 \subsection{Convert Trained Models into CNNDroid-compatible Format}
 As mentioned before, CNNDroid uses a format called MessagePack for the layer definitions. MessagePack is a binary serialization format for exchanging data, comparable to JSON\footnote{JavaScript Object Notation}, but other than JSON it is not human-readable. The omission of this constraint makes it possible to reduce size and increase parsing speed of the data stored inside. This is especially important due to the limited storage that most smartphones posses, especially compared to big servers, where deep learning is usually executed.\\
 Figure \ref{fig:json_vs_msgpack} illustrates how MessagePack saves storage space by using types (JSON encodes everything as strings, so for example, `true' uses four Bytes, while it only uses one Byte using MessagePack) and dropping control symbols, like the curly braces \{\}.
@@ -74,7 +84,8 @@ Figure \ref{fig:json_vs_msgpack} illustrates how MessagePack saves storage space
   \label{fig:json_vs_msgpack}
 \end{figure}
 
-In order to convert models from the aforementioned desktop/server deep learning frameworks, CNNDroid provides conversion scripts, which can be found in the \texttt{CNNDroid/Parameter Generation Scripts/} folder. The script for Caffe is written in Python and requires the packages \lstinline[language=python]{numpy} and \lstinline[language=python]{msgpack} to be installed.\\
+In order to convert models from the aforementioned desktop/server deep learning frameworks, CNNDroid provides conversion scripts, which can be found in the\\
+\texttt{CNNDroid/Parameter Generation Scripts/} folder. The script for Caffe is written in Python and requires the packages \lstinline[language=python]{numpy} and \lstinline[language=python]{msgpack} to be installed.\\
 Three variables need to be defined.
 \begin{itemize}
   \item{\texttt{MODEL\_FILE} - The absolute path to the trained model}
@@ -107,6 +118,6 @@ We can see that especially the more complicated convolutional layers profit from
 The CNNDroid paper\cite{cnndroid2016} states a 12-times speedup with the CIFAR10 dataset on a Samsung Galaxy Note 4.\\
 Our test machine was a MacBook Pro with an Intel Iris Graphics 6100 GPU and a 2.9 GHz Intel Core i5 CPU using the Android Studio emulator.\\
 Apparently, the emulator does not reach such a significant overall speedup as the one stated in the paper. The \texttt{conv2} layer reaches an 11-times speedup, which comes close, but in sum it only reaches a third of the expected performance.\\
-This however can potentially have a variety of reasons. Our testing setup does not follow lab conditions. It is not possible to know how the Android Studio emulator uses the MacBooks resources. Additional overhead is to be expected when communicating with the hardware. Also the CPU in the MacBook is more powerful than the one inside the Samsung phone (using an NVidia Jetson-style dual CPU consisting of one Quad-core 1.9 GHz Cortex-A57 and one Quad-core 1.3 GHz Cortex-A53, usually only using the A57 for high-computation tasks), which would increase the speedup for the parallelized computation.\\
+This however can potentially have a variety of reasons. Our testing setup does not follow lab conditions. It is not possible to know how the Android Studio emulator uses the MacBooks resources. Additional overhead is to be expected when communicating with the hardware. Also the CPU in the MacBook is more powerful than the one inside the Samsung phone (using an NVidia Jetson-style dual CPU consisting of one Quad-core 1.9 GHz Cortex-A57 and one Quad-core 1.3 GHz Cortex-A53, usually only using the A57 for high-computation tasks), which would decrease the speedup for the parallelized computation as the sequential computation is faster.\\
 In theory the GPU of the MacBook should perform a lot better than the Samsung Galaxys GPU (which is capable of 48 parallel tasks, while the MacBooks GPU is capable of many hundred computations at the same time), it is however possible that the layer doesn't provide so many calculations, so that the full performance can not be used.\\
 Overall, it is apparent, that the parallelization of the classification creates a clear speedup, which does however not reach that promised in the paper using our test setup.
