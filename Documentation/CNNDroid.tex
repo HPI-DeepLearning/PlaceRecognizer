@@ -86,7 +86,7 @@ Figure \ref{fig:json_vs_msgpack} illustrates how MessagePack saves storage space
 
 In order to convert models from the aforementioned desktop/server deep learning frameworks, CNNDroid provides conversion scripts, which can be found in the\\
 \texttt{CNNDroid/Parameter Generation Scripts/} folder. The script for Caffe is written in Python and requires the packages \lstinline[language=python]{numpy} and \lstinline[language=python]{msgpack} to be installed.\\
-Three variables need to be defined.
+Three variables need to be defined inside the script.
 \begin{itemize}
   \item{\texttt{MODEL\_FILE} - The absolute path to the trained model}
   \item{\texttt{MODEL\_NET} - The absolute path the deployment prototxt file, which specifies the parameters for the layers}
